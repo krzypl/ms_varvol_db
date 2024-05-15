@@ -1,4 +1,7 @@
 library(tidyverse)
+library(pangaear)
+
+#VARDA-----------
 
 varda_zip <- download.file("https://datapub.gfz-potsdam.de/download/10.5880.GFZ.4.3.2019.003/2019-003_Varda-export-v1.3.zip", destfile = "data/varda_raw.zip", mode = "wb") #downloading raw data in zip
 
@@ -54,7 +57,7 @@ varda_long <- varda_datasets_red %>%
   select(!n_rows) %>% 
   unnest(df) #unnesting data frames to get easy access to all the observations
 
-names(varda_long) #check the veriable to select important ones; after screening out availble variables it seems reasonable to retain only columns contatinng varve ages, and varve thickness measurment, full and for light and dark laminaes. However, these require some adjustments:
+names(varda_long) #check the veriables to select important ones; after screening out availble variables it seems reasonable to retain only columns contatinng varve ages, and varve thickness measurment, full and for light and dark laminaes. However, these require some adjustments:
 
 x_varve_thick <- varda_long %>% 
   group_by(names) %>% 
@@ -138,3 +141,32 @@ write_csv(varda_long_red, "data/varda_long_red.csv")
 varda_index_red <- varda_index_red %>% 
   filter(dataset.file %in% unique(varda_long_red$reference)) #remove lakes that were deleted from varda_long_red
 write_csv(varda_index_red, "data/varda_index_red.csv") #seve the file with extracted dataset
+
+#PANGAEA----------
+
+pang_search <- pg_search_es("varve thickness", default_operator = "AND", size = 100)
+
+# pang_search_f <- pang_search %>% 
+#   filter(grepl("\\bVarve\\b|\\bvarve\\b", `_source.agg-method`, ignore.case = TRUE))
+
+pang_doi_prep <- gsub("https://doi.org/", "", pang_search$`_source.URI`)
+pang_doi <- gsub("https://doi.pangaea.de/", "", pang_doi_prep) #filter out names containing pangea.de
+
+pang_raw_list <- list()
+
+for (doi in pang_doi) {
+  # Extract data using pg_data function for the current DOI
+  data <- pg_data(doi)
+  
+  # Append the extracted data to the list
+  pang_raw_list[[doi]] <- data
+}
+
+flattened_pang_raw_list <- flatten(pang_raw_list) #the list is manually searched for appropriate records
+
+pang_selected_doi <- c("10.1594/PANGAEA.874664",
+                       "10.1594/PANGAEA.924199",
+                       "10.1594/PANGAEA.895170",
+                       "10.1594/PANGAEA.949593")  
+
+pang_selected <- flattened_pang_raw_list[pang_selected_doi]
