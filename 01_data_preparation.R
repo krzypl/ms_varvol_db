@@ -1,5 +1,6 @@
 library(tidyverse)
 library(pangaear)
+library(jsonlite)
 
 #VARDA-----------
 
@@ -54,8 +55,13 @@ varda_datasets_red[9, ][[2]][[1]]$varveThicknessTotal <- as.numeric(varda_datase
 
 
 varda_long <- varda_datasets_red %>%
+  mutate(ref = varda_index_red$dataset.publication.citation,
+         lon = varda_index_red$dataset.core.lake.longitude,
+         lat = varda_index_red$dataset.core.lake.latitude) %>% 
   select(!n_rows) %>% 
   unnest(df) #unnesting data frames to get easy access to all the observations
+
+varda_long$ref[which(varda_long$lake_name == "Ogac")] <- "Hughen, K.A., 2009. NOAA/WDS Paleoclimatology - Ogac Lake, Baffin Island 2,000 Year Varve Thickness Data. [indicate subset used]. NOAA National Centers for Environmental Information. Available at: https://doi.org/10.25921/aqex-w486."
 
 names(varda_long) #check the veriables to select important ones; after screening out availble variables it seems reasonable to retain only columns contatinng varve ages, and varve thickness measurment, full and for light and dark laminaes. However, these require some adjustments:
 
@@ -90,7 +96,7 @@ varda_long_red_prep <- varda_long %>%
                                      organicLayerThickness,
                                      darkLayerThickness),
          age_CE = 1950 - varveAge ) %>% 
-  select(names, lake_name, varveAge, age_CE, varveThicknessTotal, lightLayerThickness,
+  select(names, lake_name, ref, lat, lon, varveAge, age_CE, varveThicknessTotal, lightLayerThickness,
          darkLayerThickness)
 
 #extract only the data <1600 CE
@@ -101,56 +107,51 @@ age_min <- varda_long_red_prep %>%
 varda_long_red <- varda_long_red_prep %>% 
   filter(age_CE >= 1600) %>% 
   filter(!lake_name == "Chatyr Kol") %>% 
-  rename(reference = names,
-         age_BP = varveAge,
+  rename(age_BP = varveAge,
          varve_thick = varveThicknessTotal,
          light_lamin_thick = lightLayerThickness,
          dark_lamin_thick = darkLayerThickness)
 
 #there are few records from two lakes. Identify these lakes and change the names to easily plot the data separately for each of the records
 names2change <- varda_long_red %>% 
-  distinct(reference) %>%
-  mutate(first_word = str_extract(reference, "^[^_-]+")) %>% 
+  distinct(names) %>%
+  mutate(first_word = str_extract(names, "^[^_-]+")) %>% 
   group_by(first_word) %>% 
   summarise(n = n()) %>% 
   filter(n > 1)
 
-unique(varda_long_red$reference)
+unique(varda_long_red$names)
 
-varda_long_red$lake_name[which(varda_long_red$reference == "Hvitarvatn-HVT031-Varves-Larsen_et_al-2011")] <- "Hvítárvatn_1"
+varda_long_red$lake_name[which(varda_long_red$names == "Hvitarvatn-HVT031-Varves-Larsen_et_al-2011")] <- "Hvítárvatn_1"
 
-varda_long_red$lake_name[which(varda_long_red$reference == "Hvitarvatn-HVT032-Varves-Larsen_et_al-2011")] <- "Hvítárvatn_2"
+varda_long_red$lake_name[which(varda_long_red$names == "Hvitarvatn-HVT032-Varves-Larsen_et_al-2011")] <- "Hvítárvatn_2"
 
-varda_long_red$lake_name[which(varda_long_red$reference == "Hvitarvatn-HVT033-Varves-Larsen_et_al-2011")] <- "Hvítárvatn_3"
+varda_long_red$lake_name[which(varda_long_red$names == "Hvitarvatn-HVT033-Varves-Larsen_et_al-2011")] <- "Hvítárvatn_3"
 
-varda_long_red$lake_name[which(varda_long_red$reference == "Iceberg_Lake--Varves-Loso_et_al-2008")] <- "Iceberg Lake_1"
+varda_long_red$lake_name[which(varda_long_red$names == "Iceberg_Lake--Varves-Loso_et_al-2008")] <- "Iceberg Lake_1"
 
-varda_long_red$lake_name[which(varda_long_red$reference == "Iceberg_Lake-P1-Varves-Diedrich_et_al-2012")] <- "Iceberg Lake_2"
+varda_long_red$lake_name[which(varda_long_red$names == "Iceberg_Lake-P1-Varves-Diedrich_et_al-2012")] <- "Iceberg Lake_2"
 
-varda_long_red$lake_name[which(varda_long_red$reference == "Iceberg_Lake-P2-Varves-Diedrich_et_al-2012")] <- "Iceberg Lake_3"
+varda_long_red$lake_name[which(varda_long_red$names == "Iceberg_Lake-P2-Varves-Diedrich_et_al-2012")] <- "Iceberg Lake_3"
 
 #check if everything is fine now
 unique(varda_long_red$lake_name)
 
 varda_long_red <- varda_long_red %>% 
-  filter(!lake_name == "Hvítárvatn_3") #there is no data for 1816 CE
+  filter(!lake_name == "Hvítárvatn_3") %>% #there is no data for 1816 CE
+  select(!names)
+
 
 #write the final data frames
 write_csv(varda_long_red, "data/varda_long_red.csv")
 
-varda_index_red <- varda_index_red %>% 
-  filter(dataset.file %in% unique(varda_long_red$reference)) #remove lakes that were deleted from varda_long_red
-write_csv(varda_index_red, "data/varda_index_red.csv") #seve the file with extracted dataset
 
 #PANGAEA----------
 
-pang_search <- pg_search_es("varve thickness", default_operator = "AND", size = 100)
-
-# pang_search_f <- pang_search %>% 
-#   filter(grepl("\\bVarve\\b|\\bvarve\\b", `_source.agg-method`, ignore.case = TRUE))
+pang_search <- pg_search_es("varve thickness", default_operator = "AND", size = 100, ignore.case = TRUE)
 
 pang_doi_prep <- gsub("https://doi.org/", "", pang_search$`_source.URI`)
-pang_doi <- gsub("https://doi.pangaea.de/", "", pang_doi_prep) #filter out names containing pangea.de
+pang_doi <- gsub("https://doi.pangaea.de/", "", pang_doi_prep) #change the names containing pangea.de separately
 
 pang_raw_list <- list()
 
@@ -170,3 +171,76 @@ pang_selected_doi <- c("10.1594/PANGAEA.874664",
                        "10.1594/PANGAEA.949593")  
 
 pang_selected <- flattened_pang_raw_list[pang_selected_doi]
+
+pang_meta_tibble <- tibble(
+  ref = c(
+    pang_selected$`10.1594/PANGAEA.874664`$citation,
+    pang_selected$`10.1594/PANGAEA.924199`$citation,
+    pang_selected$`10.1594/PANGAEA.895170`$citation,
+    pang_selected$`10.1594/PANGAEA.949593`$citation
+  ),
+  lake_name = c(
+    pang_selected$`10.1594/PANGAEA.874664`$metadata$events$LOCATION,
+    pang_selected$`10.1594/PANGAEA.924199`$metadata$events$LOCATION,
+    pang_selected$`10.1594/PANGAEA.895170`$metadata$events$LOCATION,
+    "Montcortès"
+  ),
+  lat = as.numeric(c(
+    pang_selected$`10.1594/PANGAEA.874664`$metadata$events$LATITUDE,
+    pang_selected$`10.1594/PANGAEA.924199`$metadata$events$LATITUDE,
+    pang_selected$`10.1594/PANGAEA.895170`$metadata$events$LATITUDE,
+    42.331580
+  )),
+  lon = as.numeric(c(
+    pang_selected$`10.1594/PANGAEA.874664`$metadata$events$LONGITUDE,
+    pang_selected$`10.1594/PANGAEA.924199`$metadata$events$LONGITUDE,
+    pang_selected$`10.1594/PANGAEA.895170`$metadata$events$LONGITUDE,
+    0.994910
+  ))
+) #data from Lake Montecortes appeared to have different strucure. I had somme issues when creating the tibble, and therefore it was finally done manually
+
+pang_meta_tibble <- pang_meta_tibble %>%
+  mutate(lake_name = case_when(
+    grepl("Cape Bounty East Lake, Canada", lake_name) ~ "East Lake",
+    grepl("Lake Gościąż, Poland", lake_name) ~ "Gościąż",
+    grepl("Melville Island", lake_name) ~ "Chevalier",
+    TRUE ~ lake_name  # Retain the original lake_name if none of the conditions match
+  ))
+
+pang_long_prep <- pang_meta_tibble %>% 
+  mutate(df = list(l1 = pang_selected$`10.1594/PANGAEA.874664`$data,
+                l2 = pang_selected$`10.1594/PANGAEA.924199`$data,
+                l3 = pang_selected$`10.1594/PANGAEA.895170`$data,
+                l4 = pang_selected$`10.1594/PANGAEA.949593`$data)) %>% 
+  unnest(df) %>% 
+  select(ref, lake_name, lat, lon, "Age [a AD/CE]", "Age [ka BP]", "Depth sed [m]", "Varve thick [mm]", "Varve thick [mm] (of the nival sedimentary unit...)", "Date/Time (Year, Age model, varve counting)", "Varve thick calc [mm] (CaL - Raw calcite values: cal...)") %>%
+  mutate(age_CE = ifelse(is.na(`Age [a AD/CE]`), `Date/Time (Year, Age model, varve counting)`, `Age [a AD/CE]`),
+         age_BP = `Age [ka BP]`,
+         varve_thick = `Varve thick [mm]`,
+         light_lamin_thick = `Varve thick calc [mm] (CaL - Raw calcite values: cal...)`,
+         dark_lamin_thick = `Varve thick [mm] (of the nival sedimentary unit...)`
+         ) %>% 
+  select(names(varda_long_red))
+
+gosciaz_ages <- pg_data("10.1594/PANGAEA.924198")[[1]]$data
+ga <- gosciaz_ages$`Age [ka BP]`
+
+pang_long_prep$age_BP[which(pang_long_prep$lake_name == "Gościąż")] <- ga
+
+pang_long <- pang_long_prep %>% 
+  mutate(age_BP = ifelse(is.na(age_BP), 1950 - age_CE, age_BP * 1000),
+         age_CE = ifelse(is.na(age_CE), 1950 - age_BP, age_CE)) %>% 
+  filter(age_CE >= 1600)
+
+#NOAA----------
+#the database was searched manually for records missing from voth VARDA and PANGEA databases. The following records were found: 
+
+upper_sopper_prep <- read_table("https://www.ncei.noaa.gov/pub/data/paleo/paleolimnology/northamerica/canada/baffin/soper_2000.txt", skip = 81)
+
+upper_sopper <- tibble(age_CE = as.numeric(c(names(upper_sopper_prep[1]), upper_sopper_prep$`1992`)),
+                       dark_lamin_thick = as.numeric(c(names(upper_sopper_prep[2]), upper_sopper_prep$`0.233285`))) %>% 
+  mutate(ref = "Hughen, K.A., Overpeck, J.T. and Anderson, R.F., 2000. Recent Warming in a 500-Year Paleotemperature Record from Varved Sediments: Upper Soper Lake, Baffin Island, Canada, The Holocene, 10(1), 9-19. Availible at: https://doi.org/10.1191/095968300676746202.",
+         lake_name = "Upper Sopper")
+
+green_lake <- read_table("https://www.ncei.noaa.gov/pub/data/paleo/paleolimnology/northamerica/canada/bc/menounos2006-green.txt", skip = 105) %>% 
+  select(year, thick_nlog)
