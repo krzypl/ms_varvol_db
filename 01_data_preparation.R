@@ -1,6 +1,5 @@
 library(tidyverse)
 library(pangaear)
-library(jsonlite)
 
 #VARDA-----------
 
@@ -139,7 +138,8 @@ unique(varda_long_red$lake_name)
 
 varda_long_red <- varda_long_red %>% 
   filter(!lake_name == "Hvítárvatn_3") %>% #there is no data for 1816 CE
-  select(!names)
+  select(!names) %>% 
+  mutate(lake_name = ifelse(lake_name == "East Lake", "East Lake_1", lake_name)) #there is another record from East Lake available from Pangaea. To distinguish between these two the number is given to each
 
 
 #write the final data frames
@@ -186,13 +186,13 @@ pang_meta_tibble <- tibble(
     "Montcortès"
   ),
   lat = as.numeric(c(
-    pang_selected$`10.1594/PANGAEA.874664`$metadata$events$LATITUDE,
-    pang_selected$`10.1594/PANGAEA.924199`$metadata$events$LATITUDE,
+    varda_long_red$lat[which(varda_long_red$lake_name == "East Lake_1")][[1]], #coordinates in Pangaea are less precise than the ones from in Varda
+    pang_selected$`10.1594/PANGAEA.924199`$metadata$events$LATITUDE, 
     pang_selected$`10.1594/PANGAEA.895170`$metadata$events$LATITUDE,
     42.331580
   )),
   lon = as.numeric(c(
-    pang_selected$`10.1594/PANGAEA.874664`$metadata$events$LONGITUDE,
+    varda_long_red$lon[which(varda_long_red$lake_name == "East Lake_1")][[1]], #same as above
     pang_selected$`10.1594/PANGAEA.924199`$metadata$events$LONGITUDE,
     pang_selected$`10.1594/PANGAEA.895170`$metadata$events$LONGITUDE,
     0.994910
@@ -201,7 +201,7 @@ pang_meta_tibble <- tibble(
 
 pang_meta_tibble <- pang_meta_tibble %>%
   mutate(lake_name = case_when(
-    grepl("Cape Bounty East Lake, Canada", lake_name) ~ "East Lake",
+    grepl("Cape Bounty East Lake, Canada", lake_name) ~ "East Lake_2",
     grepl("Lake Gościąż, Poland", lake_name) ~ "Gościąż",
     grepl("Melville Island", lake_name) ~ "Chevalier",
     TRUE ~ lake_name  # Retain the original lake_name if none of the conditions match
@@ -233,14 +233,61 @@ pang_long <- pang_long_prep %>%
   filter(age_CE >= 1600)
 
 #NOAA----------
-#the database was searched manually for records missing from voth VARDA and PANGEA databases. The following records were found: 
+#the database was searched manually for records missing from both VARDA and PANGEA databases. The following records were found: 
 
 upper_sopper_prep <- read_table("https://www.ncei.noaa.gov/pub/data/paleo/paleolimnology/northamerica/canada/baffin/soper_2000.txt", skip = 81)
 
 upper_sopper <- tibble(age_CE = as.numeric(c(names(upper_sopper_prep[1]), upper_sopper_prep$`1992`)),
                        dark_lamin_thick = as.numeric(c(names(upper_sopper_prep[2]), upper_sopper_prep$`0.233285`))) %>% 
   mutate(ref = "Hughen, K.A., Overpeck, J.T. and Anderson, R.F., 2000. Recent Warming in a 500-Year Paleotemperature Record from Varved Sediments: Upper Soper Lake, Baffin Island, Canada, The Holocene, 10(1), 9-19. Availible at: https://doi.org/10.1191/095968300676746202.",
-         lake_name = "Upper Sopper")
+         lake_name = "Upper Sopper",
+         lat = 62.9166667, #coordinates from NOAA
+         lon = -69.53)
 
 green_lake <- read_table("https://www.ncei.noaa.gov/pub/data/paleo/paleolimnology/northamerica/canada/bc/menounos2006-green.txt", skip = 105) %>% 
-  select(year, thick_nlog)
+  select(year, thick_nlog) %>% 
+  mutate(varve_thick = (exp(1))^thick_nlog,
+         ref = "Schiefer, E., Menounos, B., Slaymaker, O., 2006. Extreme sediment delivery events recorded in the contemporary sediment record of a montane lake, southern Coast Mountains, British Columbia. Canadian Journal of Earth Sciences, 43(12), 1777-1790. Available at: https://doi.org/10.1139/e06-056",
+         lake_name = "Green Lake",
+         lat = 50.2, #coordinates from NOAA
+         lon = -122.9) %>% 
+  rename(age_CE = year) %>% 
+  select(!thick_nlog)
+
+lake_nautajarvi <- read_table("https://www.ncei.noaa.gov/pub/data/paleo/paleolimnology/europe/finland/nautajarvi2005.txt", skip = 100-7) %>% 
+  mutate(dark_lamin_thick = Organic * 10e-4,
+         light_lamin_thick = Mineral * 10e-4,
+         varve_thick = dark_lamin_thick + light_lamin_thick,
+         age_CE = Year,
+         lake_name = "Nautajärvi",
+         ref = "Ojala, A.E.K. and T. Alenius.  2005. 10 000 years of interannual sedimentation recorded in the Lake Nautajärvi (Finland) clastic–organic varves.  
+Palaeogeography, Palaeoclimatology, Palaeoecology, 219(3-4), 285-302, available at: doi:10.1016/j.palaeo.2005.01.002",
+         lon = 24.6833,
+         lat = 61.8000) %>% 
+  select(!Year & !`X-ray` & !density & !Mineral & !Organic)
+
+noaa_long <- upper_sopper %>% 
+  left_join(green_lake) %>%
+  left_join(lake_nautajarvi)
+
+#Geological Society of America (GSA) Data Repository -------------
+#Data from three alaskan lakes is available at https://gsapubs.figshare.com/articles/journal_contribution/Supplemental_material_Varve_formation_during_the_past_three_centuries_in_three_large_proglacial_lakes_in_south-central_Alaska/12535784; data is available only in pdf and required some steps to get the final records (I use stacked records from each lake):
+gsa_kenai <- read_csv("data/boes_et_al_2017_kenai.csv")
+
+gsa_skilak <- read_csv("data/boes_et_al_2017_skilak.csv")
+
+gsa_long <- gsa_kenai %>% 
+  left_join(gsa_skilak)
+
+#Data obtained from authors ---------
+au_czechowskie <- read_csv("data/slowinski_et_al_2021_czechowskie.csv")
+
+au_long <- au_czechowskie
+
+#Combining datasets --------------
+full_ds <- varda_long_red %>% 
+  left_join(pang_long) %>% 
+  left_join(noaa_long) %>% 
+  left_join(gsa_long) %>% 
+  left_join(au_long)
+  
