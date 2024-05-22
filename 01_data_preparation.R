@@ -141,11 +141,6 @@ varda_long_red <- varda_long_red %>%
   select(!names) %>% 
   mutate(lake_name = ifelse(lake_name == "East Lake", "East Lake_1", lake_name)) #there is another record from East Lake available from Pangaea. To distinguish between these two the number is given to each
 
-
-#write the final data frames
-write_csv(varda_long_red, "data/varda_long_red.csv")
-
-
 #PANGAEA----------
 
 pang_search <- pg_search_es("varve thickness", default_operator = "AND", size = 100, ignore.case = TRUE)
@@ -267,8 +262,8 @@ Palaeogeography, Palaeoclimatology, Palaeoecology, 219(3-4), 285-302, available 
   select(!Year & !`X-ray` & !density & !Mineral & !Organic)
 
 noaa_long <- upper_sopper %>% 
-  left_join(green_lake) %>%
-  left_join(lake_nautajarvi)
+  full_join(green_lake) %>%
+  full_join(lake_nautajarvi)
 
 #Geological Society of America (GSA) Data Repository -------------
 #Data from three alaskan lakes is available at https://gsapubs.figshare.com/articles/journal_contribution/Supplemental_material_Varve_formation_during_the_past_three_centuries_in_three_large_proglacial_lakes_in_south-central_Alaska/12535784; data is available only in pdf and required some steps to get the final records (I use stacked records from each lake):
@@ -277,7 +272,7 @@ gsa_kenai <- read_csv("data/boes_et_al_2017_kenai.csv")
 gsa_skilak <- read_csv("data/boes_et_al_2017_skilak.csv")
 
 gsa_long <- gsa_kenai %>% 
-  left_join(gsa_skilak)
+  full_join(gsa_skilak)
 
 #Data obtained from authors ---------
 au_czechowskie <- read_csv("data/slowinski_et_al_2021_czechowskie.csv")
@@ -286,8 +281,11 @@ au_long <- au_czechowskie
 
 #Combining datasets --------------
 full_ds <- varda_long_red %>% 
-  left_join(pang_long) %>% 
-  left_join(noaa_long) %>% 
-  left_join(gsa_long) %>% 
-  left_join(au_long)
+  full_join(pang_long) %>% 
+  full_join(noaa_long) %>% 
+  full_join(gsa_long) %>% 
+  full_join(au_long) %>% 
+  select(lake_name, lat, lon, age_CE, varve_thick, light_lamin_thick, dark_lamin_thick, ref) %>% 
+  filter(age_CE >= 1600)
   
+write_csv(full_ds, "data/full_ds.csv")
