@@ -276,8 +276,11 @@ gsa_long <- gsa_kenai %>%
 
 #Data obtained from authors ---------
 au_czechowskie <- read_csv("data/slowinski_et_al_2021_czechowskie.csv")
+au_kusai <- read_csv("data/zhang_et_al_2022_kusai.csv")
 
-au_long <- au_czechowskie
+au_long <- au_czechowskie %>% 
+  full_join(au_kusai)
+
 
 #Combining datasets --------------
 full_ds <- varda_long_red %>% 
