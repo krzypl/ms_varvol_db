@@ -8,6 +8,7 @@ library(sf)
 library(tmap)
 library(rnaturalearth)
 library(rnaturalearthdata)
+library(abind)
 
 #read data------
 full_ds <- read_csv("data/full_ds.csv") %>% 
@@ -63,9 +64,11 @@ summer_r <- raster::rotate(summer_r_prep)
 
 countries <- ne_countries(scale = "medium", returnclass = "sf")
 
-coordinates(full_ds) <- ~lon + lat
-proj4string(full_ds) <- CRS("+proj=longlat +datum=WGS84")
-full_ds_sf <- st_as_sf(full_ds)
+full_ds_sf_prep <- full_ds
+
+coordinates(full_ds_sf_prep) <- ~lon + lat
+proj4string(full_ds_sf_prep) <- CRS("+proj=longlat +datum=WGS84")
+full_ds_sf <- st_as_sf(full_ds_sf_prep)
 
 tm_shape(summer_r) + 
   tm_raster(style = "cont", palette = "-RdBu", n = 20, title = "Temperature", legend.reverse = TRUE) +
@@ -124,8 +127,6 @@ summer_prec_r_prep <- raster(t(summer_prec_anomaly_1816_perc), xmn=min(longitude
 
 summer_prec_r <- raster::rotate(summer_prec_r_prep)
 
-countries <- ne_countries(scale = "medium", returnclass = "sf")
-
 tm_shape(summer_prec_r) + 
   tm_raster(style = "cont", palette = "BrBG", n = 20, title = "Precipitation anomaly (%)", legend.reverse = TRUE) +
   tm_shape(countries) + 
@@ -143,5 +144,117 @@ tm_shape(summer_prec_r) +
           ticks = TRUE,  # Add ticks
           labels.show = TRUE)
 
-#extract summer temperature anomaly value for the location of the lakes--------
-extracted_summer_an <- extract(summer_r, full_ds_sf)
+#Boreal winter temperature anomaly in 1816/1817-----------
+ekf_names <- list.files(path = "data/ekf400_ens_mem_mean", full.names = TRUE) #get names for data files
+nc_data_list <- lapply(ekf_names, nc_open) #data for the reference period 1766-1866
+
+extract_winter <- function(arr) {
+  summer_temp <- arr[,,c(1,2,12)]
+  return(summer_temp)
+}
+
+winter_temp_an <- lapply(temp_an, extract_winter)
+
+winter_temp_mean_prep <- Reduce("+", winter_temp_an) / length(winter_temp_an)
+winter_temp_mean <- apply(winter_temp_mean_prep, MARGIN = c(1, 2), FUN = mean)
+
+ekf_1816_winter_prep <- ekf_1816_temp[,,12]
+
+ekf_1817 <- nc_data_list[[52]]
+ekf_1817_temp <- get_temp(ekf_1817)
+
+ekf_1817_winter_prep <- ekf_1817_temp[,,1:2]
+ekf_1816_17_winter <- abind(ekf_1817_winter_prep, ekf_1816_winter_prep, along = 3)
+
+ekf_1816_17_winter_mean <- apply(ekf_1816_17_winter, MARGIN = c(1, 2), FUN = mean)
+
+winter_temp_anomaly_1816_17 <- ekf_1816_17_winter_mean - winter_temp_mean
+
+lapply(nc_data_list, nc_close)
+
+winter_r_prep <- raster(t(winter_temp_anomaly_1816_17), xmn=min(longitude), xmx=max(longitude), ymn=min(latitude), ymx=max(latitude), crs=CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs+ towgs84=0,0,0"))
+
+winter_r <- raster::rotate(winter_r_prep)
+
+tm_shape(winter_r) + 
+  tm_raster(style = "cont", palette = "-RdBu", n = 20, title = "Temperature anomaly (°C)", legend.reverse = TRUE) +
+  tm_shape(countries) + 
+  tm_borders(lwd = 1, col = "black") +
+  tm_shape(full_ds_sf) +
+  tm_symbols(size = 0.5, col = "red", border.col = "black") +
+  tm_layout(legend.outside = TRUE,
+            frame = TRUE,
+            main.title = "Boreal winter temperature anomaly in 1816/1817 with respect to 1766-1866 mean",
+            main.title.position = 0,
+            main.title.size = 1) +
+  tm_grid(labels.size = 0.5,  # Adjust label size
+          labels.inside.frame = FALSE,  # Labels outside frame
+          lines = FALSE,  # Turn off grid lines
+          ticks = TRUE,  # Add ticks
+          labels.show = TRUE)
+
+#Boreal winter precipitation anomaly in 1816/17--------
+ekf_names <- list.files(path = "data/ekf400_ens_mem_mean", full.names = TRUE) #get names for data files
+nc_data_list <- lapply(ekf_names, nc_open) #data for the reference period 1766-1866
+
+extract_winter_prec <- function(arr) {
+  winter_prec <- arr[,,c(1,11,12)]
+  return(winter_prec)
+}
+
+winter_prec_an <- lapply(prec_an, extract_winter_prec)
+
+winter_prec_mean_prep <- Reduce("+", winter_prec_an) / length(winter_prec_an)
+winter_prec_mean <- apply(winter_prec_mean_prep, MARGIN = c(1, 2), FUN = mean)
+
+ekf_1816_winter_prec_prep <- ekf_1816_prec[,,12]
+
+ekf_1817_prec <- get_prec(ekf_1817)
+
+ekf_1817_winter_prec_prep <- ekf_1817_prec[,,1:2]
+ekf_1816_17_winter_prec <- abind(ekf_1817_winter_prec_prep, ekf_1816_winter_prec_prep, along = 3)
+
+ekf_1816_17_winter_prec_mean <- apply(ekf_1816_17_winter_prec, MARGIN = c(1, 2), FUN = mean)
+
+winter_prec_anomaly_1816_17 <- winter_prec_mean - ekf_1816_17_winter_prec_mean
+winter_prec_anomaly_1816__17_perc_prep <- winter_prec_anomaly_1816_17/winter_prec_mean
+winter_prec_anomaly_1816_17_perc <- winter_prec_anomaly_1816__17_perc_prep*(-100)
+
+lapply(nc_data_list, nc_close)
+
+winter_prec_r_prep <- raster(t(winter_prec_anomaly_1816_17_perc), xmn=min(longitude), xmx=max(longitude), ymn=min(latitude), ymx=max(latitude), crs=CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs+ towgs84=0,0,0"))
+
+winter_prec_r <- raster::rotate(winter_prec_r_prep)
+
+tm_shape(winter_prec_r) + 
+  tm_raster(style = "cont", palette = "BrBG", n = 20, title = "Precipitation anomaly (%)", legend.reverse = TRUE) +
+  tm_shape(countries) + 
+  tm_borders(lwd = 1, col = "black") +
+  tm_shape(full_ds_sf) +
+  tm_symbols(size = 0.5, col = "red", border.col = "black") +
+  tm_layout(legend.outside = TRUE,
+            frame = TRUE,
+            main.title = "Boreal winter precipitation anomaly in 1816/1817 with respect to 1766-1866 mean",
+            main.title.position = 0,
+            main.title.size = 1) +
+  tm_grid(labels.size = 0.5,  # Adjust label size
+          labels.inside.frame = FALSE,  # Labels outside frame
+          lines = FALSE,  # Turn off grid lines
+          ticks = TRUE,  # Add ticks
+          labels.show = TRUE)
+
+#extract anomaly values for the location of the lakes--------
+extracted_summer_temp_an <- raster::extract(summer_r, full_ds_sf)
+extracted_summer_prec_an <- raster::extract(summer_prec_r, full_ds_sf)
+extracted_winter_temp_an <- raster::extract(winter_r, full_ds_sf)
+extracted_winter_prec_an <- raster::extract(winter_prec_r, full_ds_sf)
+
+full_ds_an <- full_ds %>%
+  mutate(summer_1816_temp_an = extracted_summer_temp_an,
+         summer_1816_prec_an = extracted_summer_prec_an,
+         winter_1816_17_temp_an = extracted_winter_temp_an,
+         winter_1816_17_prec_an = extracted_winter_prec_an)
+
+write_csv(full_ds_an, "data/full_ds_an.csv")
+
+

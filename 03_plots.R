@@ -1,11 +1,21 @@
 library(tidyverse)
 library(ggrepel)
+#plot anomalies 
+full_ds_an <- read_csv("data/full_ds_an.csv") %>% 
+  pivot_longer(cols = summer_1816_temp_an:winter_1816_17_prec_an,
+               names_to = "anomaly", values_to = "value_of_anomaly") %>% 
+  mutate(unit4anomaly = ifelse(anomaly == "summer_1816_temp_an" | anomaly == "winter_1816_17_temp_an", "°C", "%"))
+
+anomalies_plot <- ggplot(full_ds_an, aes(y = lake_name, x = value_of_anomaly)) +
+  geom_col() +
+  facet_wrap(.~ anomaly, scales = "free")
 
 #plot varve thickness time series -------
 
-varda_long_red <- read_csv("data/varda_long_red.csv")
+full_ds <- read_csv("data/full_ds.csv") %>% 
+  filter(age_CE > 1765 & age_CE < 1867)
 
-varve_thick_plot <- ggplot(varda_long_red, aes(x = age_CE, y = varve_thick)) +
+varve_thick_plot <- ggplot(full_ds, aes(x = age_CE, y = varve_thick)) +
   geom_line() +
   geom_point(size = 0.4) +
   geom_vline(xintercept = 1816, color = "blue", alpha = 0.8) +
@@ -13,43 +23,25 @@ varve_thick_plot <- ggplot(varda_long_red, aes(x = age_CE, y = varve_thick)) +
 
 varve_thick_plot
 
-varve_thick_plot + xlim(c(1770, 1870))
-
-varve_thick_plot + xlim(c(1816-50, 1816+50)) +
-  geom_vline(xintercept = 1783, color = "green", alpha = 0.8) + #Laki, Iceland
-  geom_vline(xintercept = 1809, color = "green", alpha = 0.8) #undiff
-
-dark_thick_plot <- varda_long_red %>% 
+dark_lamin_thick_plot <- full_ds %>% 
   filter(!is.na(dark_lamin_thick)) %>% 
-  ggplot(aes(x = age_CE, y = dark_lamin_thick)) + 
+  ggplot(aes(x = age_CE, y = dark_lamin_thick)) +
   geom_line() +
   geom_point(size = 0.4) +
   geom_vline(xintercept = 1816, color = "blue", alpha = 0.8) +
   facet_wrap(.~ lake_name, scales = "free_y")
 
-dark_thick_plot
+dark_lamin_thick_plot
 
-dark_thick_plot + xlim(c(1770, 1870))
-
-dark_thick_plot + xlim(c(1816-50, 1816+50)) +
-  geom_vline(xintercept = 1783, color = "green", alpha = 0.8) + #Laki, Iceland
-  geom_vline(xintercept = 1809, color = "green", alpha = 0.8) #undiff
-
-light_thick_plot <- varda_long_red %>% 
+light_lamin_thick_plot <- full_ds %>% 
   filter(!is.na(light_lamin_thick)) %>% 
-  ggplot(aes(x = age_CE, y = light_lamin_thick)) + 
+  ggplot(aes(x = age_CE, y = light_lamin_thick)) +
   geom_line() +
   geom_point(size = 0.4) +
   geom_vline(xintercept = 1816, color = "blue", alpha = 0.8) +
   facet_wrap(.~ lake_name, scales = "free_y")
 
-light_thick_plot
-
-light_thick_plot + xlim(c(1770, 1870))
-
-light_thick_plot + xlim(c(1816-50, 1816+50)) +
-  geom_vline(xintercept = 1783, color = "green", alpha = 0.8) + #Laki, Iceland
-  geom_vline(xintercept = 1809, color = "green", alpha = 0.8) #undiff
+light_lamin_thick_plot
 
 #plot peak detection results ---------
 ##total vt-----
