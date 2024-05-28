@@ -57,7 +57,7 @@ varda_long <- varda_datasets_red %>%
   mutate(ref = varda_index_red$dataset.publication.citation,
          lon = varda_index_red$dataset.core.lake.longitude,
          lat = varda_index_red$dataset.core.lake.latitude) %>% 
-  select(!n_rows) %>% 
+  dplyr::select(!n_rows) %>% 
   unnest(df) #unnesting data frames to get easy access to all the observations
 
 varda_long$ref[which(varda_long$lake_name == "Ogac")] <- "Hughen, K.A., 2009. NOAA/WDS Paleoclimatology - Ogac Lake, Baffin Island 2,000 Year Varve Thickness Data. [indicate subset used]. NOAA National Centers for Environmental Information. Available at: https://doi.org/10.25921/aqex-w486."
@@ -95,7 +95,7 @@ varda_long_red_prep <- varda_long %>%
                                      organicLayerThickness,
                                      darkLayerThickness),
          age_CE = 1950 - varveAge ) %>% 
-  select(names, lake_name, ref, lat, lon, varveAge, age_CE, varveThicknessTotal, lightLayerThickness,
+  dplyr::select(names, lake_name, ref, lat, lon, varveAge, age_CE, varveThicknessTotal, lightLayerThickness,
          darkLayerThickness)
 
 #extract only the data <1600 CE
@@ -138,7 +138,7 @@ unique(varda_long_red$lake_name)
 
 varda_long_red <- varda_long_red %>% 
   filter(!lake_name == "Hvítárvatn_3") %>% #there is no data for 1816 CE
-  select(!names) %>% 
+  dplyr::select(!names) %>% 
   mutate(lake_name = ifelse(lake_name == "East Lake", "East Lake_1", lake_name)) #there is another record from East Lake available from Pangaea. To distinguish between these two the number is given to each
 
 #PANGAEA----------
@@ -208,14 +208,14 @@ pang_long_prep <- pang_meta_tibble %>%
                 l3 = pang_selected$`10.1594/PANGAEA.895170`$data,
                 l4 = pang_selected$`10.1594/PANGAEA.949593`$data)) %>% 
   unnest(df) %>% 
-  select(ref, lake_name, lat, lon, "Age [a AD/CE]", "Age [ka BP]", "Depth sed [m]", "Varve thick [mm]", "Varve thick [mm] (of the nival sedimentary unit...)", "Date/Time (Year, Age model, varve counting)", "Varve thick calc [mm] (CaL - Raw calcite values: cal...)") %>%
+  dplyr::select(ref, lake_name, lat, lon, "Age [a AD/CE]", "Age [ka BP]", "Depth sed [m]", "Varve thick [mm]", "Varve thick [mm] (of the nival sedimentary unit...)", "Date/Time (Year, Age model, varve counting)", "Varve thick calc [mm] (CaL - Raw calcite values: cal...)") %>%
   mutate(age_CE = ifelse(is.na(`Age [a AD/CE]`), `Date/Time (Year, Age model, varve counting)`, `Age [a AD/CE]`),
          age_BP = `Age [ka BP]`,
          varve_thick = `Varve thick [mm]`,
          light_lamin_thick = `Varve thick calc [mm] (CaL - Raw calcite values: cal...)`,
          dark_lamin_thick = `Varve thick [mm] (of the nival sedimentary unit...)`
          ) %>% 
-  select(names(varda_long_red))
+  dplyr::select(names(varda_long_red))
 
 gosciaz_ages <- pg_data("10.1594/PANGAEA.924198")[[1]]$data
 ga <- gosciaz_ages$`Age [ka BP]`
@@ -240,14 +240,14 @@ upper_sopper <- tibble(age_CE = as.numeric(c(names(upper_sopper_prep[1]), upper_
          lon = -69.53)
 
 green_lake <- read_table("https://www.ncei.noaa.gov/pub/data/paleo/paleolimnology/northamerica/canada/bc/menounos2006-green.txt", skip = 105) %>% 
-  select(year, thick_nlog) %>% 
+  dplyr::select(year, thick_nlog) %>% 
   mutate(varve_thick = (exp(1))^thick_nlog,
          ref = "Schiefer, E., Menounos, B., Slaymaker, O., 2006. Extreme sediment delivery events recorded in the contemporary sediment record of a montane lake, southern Coast Mountains, British Columbia. Canadian Journal of Earth Sciences, 43(12), 1777-1790. Available at: https://doi.org/10.1139/e06-056",
          lake_name = "Green Lake",
          lat = 50.2, #coordinates from NOAA
          lon = -122.9) %>% 
   rename(age_CE = year) %>% 
-  select(!thick_nlog)
+  dplyr::select(!thick_nlog)
 
 lake_nautajarvi <- read_table("https://www.ncei.noaa.gov/pub/data/paleo/paleolimnology/europe/finland/nautajarvi2005.txt", skip = 100-7) %>% 
   mutate(dark_lamin_thick = Organic * 10e-4,
@@ -259,7 +259,7 @@ lake_nautajarvi <- read_table("https://www.ncei.noaa.gov/pub/data/paleo/paleolim
 Palaeogeography, Palaeoclimatology, Palaeoecology, 219(3-4), 285-302, available at: doi:10.1016/j.palaeo.2005.01.002",
          lon = 24.6833,
          lat = 61.8000) %>% 
-  select(!Year & !`X-ray` & !density & !Mineral & !Organic)
+  dplyr::select(!Year & !`X-ray` & !density & !Mineral & !Organic)
 
 noaa_long <- upper_sopper %>% 
   full_join(green_lake) %>%
@@ -277,9 +277,11 @@ gsa_long <- gsa_kenai %>%
 #Data obtained from authors ---------
 au_czechowskie <- read_csv("data/slowinski_et_al_2021_czechowskie.csv")
 au_kusai <- read_csv("data/zhang_et_al_2022_kusai.csv")
+au_nar_golu <- read_csv("data/woodbridge_2009_nar_golu.csv")
 
 au_long <- au_czechowskie %>% 
-  full_join(au_kusai)
+  full_join(au_kusai) %>% 
+  full_join(au_nar_golu)
 
 
 #Combining datasets --------------
@@ -288,7 +290,7 @@ full_ds <- varda_long_red %>%
   full_join(noaa_long) %>% 
   full_join(gsa_long) %>% 
   full_join(au_long) %>% 
-  select(lake_name, lat, lon, age_CE, varve_thick, light_lamin_thick, dark_lamin_thick, ref) %>% 
+  dplyr::select(lake_name, lat, lon, age_CE, varve_thick, light_lamin_thick, dark_lamin_thick, ref) %>% 
   filter(age_CE >= 1600)
   
 write_csv(full_ds, "data/full_ds.csv")
