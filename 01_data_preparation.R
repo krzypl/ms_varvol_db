@@ -138,8 +138,12 @@ unique(varda_long_red$lake_name)
 
 varda_long_red <- varda_long_red %>% 
   filter(!lake_name == "Hvítárvatn_3") %>% #there is no data for 1816 CE
+  filter(!lake_name == "Kallio Kourujärvi") %>% #poor quality of the data
+  filter(!lake_name == "Kalliojärvi") %>% #poor qulity of the data
+  filter(!lake_name == "Iceberg Lake_3") %>% #the record does not cover the whole period 1766-1866
   dplyr::select(!names) %>% 
-  mutate(lake_name = ifelse(lake_name == "East Lake", "East Lake_1", lake_name)) #there is another record from East Lake available from Pangaea. To distinguish between these two the number is given to each
+  mutate(lake_name = ifelse(lake_name == "East Lake", "East Lake_1", lake_name),
+         source = "VARDA") #there is another record from East Lake available from Pangaea. To distinguish between these two the number is given to each
 
 #PANGAEA----------
 
@@ -212,6 +216,7 @@ pang_long_prep <- pang_meta_tibble %>%
   mutate(age_CE = ifelse(is.na(`Age [a AD/CE]`), `Date/Time (Year, Age model, varve counting)`, `Age [a AD/CE]`),
          age_BP = `Age [ka BP]`,
          varve_thick = `Varve thick [mm]`,
+         source = "PANGAEA",
          light_lamin_thick = `Varve thick calc [mm] (CaL - Raw calcite values: cal...)`,
          dark_lamin_thick = `Varve thick [mm] (of the nival sedimentary unit...)`
          ) %>% 
@@ -224,8 +229,10 @@ pang_long_prep$age_BP[which(pang_long_prep$lake_name == "Gościąż")] <- ga
 
 pang_long <- pang_long_prep %>% 
   mutate(age_BP = ifelse(is.na(age_BP), 1950 - age_CE, age_BP * 1000),
-         age_CE = ifelse(is.na(age_CE), 1950 - age_BP, age_CE)) %>% 
-  filter(age_CE >= 1600)
+         age_CE = ifelse(is.na(age_CE), 1950 - age_BP, age_CE),
+         source = "PANGAEA") %>% 
+  filter(age_CE >= 1600) %>% 
+  filter(!lake_name == "Gościąż") #no data for 1816
 
 #NOAA----------
 #the database was searched manually for records missing from both VARDA and PANGEA databases. The following records were found: 
@@ -263,7 +270,8 @@ Palaeogeography, Palaeoclimatology, Palaeoecology, 219(3-4), 285-302, available 
 
 noaa_long <- upper_sopper %>% 
   full_join(green_lake) %>%
-  full_join(lake_nautajarvi)
+  full_join(lake_nautajarvi) %>% 
+  mutate(source = "NOAA")
 
 #Geological Society of America (GSA) Data Repository -------------
 #Data from three alaskan lakes is available at https://gsapubs.figshare.com/articles/journal_contribution/Supplemental_material_Varve_formation_during_the_past_three_centuries_in_three_large_proglacial_lakes_in_south-central_Alaska/12535784; data is available only in pdf and required some steps to get the final records (I use stacked records from each lake):
@@ -272,16 +280,21 @@ gsa_kenai <- read_csv("data/boes_et_al_2017_kenai.csv")
 gsa_skilak <- read_csv("data/boes_et_al_2017_skilak.csv")
 
 gsa_long <- gsa_kenai %>% 
-  full_join(gsa_skilak)
+  full_join(gsa_skilak) %>% 
+  mutate(source = "GSA")
 
 #Data obtained from authors ---------
 au_czechowskie <- read_csv("data/slowinski_et_al_2021_czechowskie.csv")
 au_kusai <- read_csv("data/zhang_et_al_2022_kusai.csv")
 au_nar_golu <- read_csv("data/woodbridge_2009_nar_golu.csv")
+au_holzmaar <- read_csv("data/holzmaar.csv")
 
 au_long <- au_czechowskie %>% 
   full_join(au_kusai) %>% 
-  full_join(au_nar_golu)
+  full_join(au_nar_golu) %>% 
+  full_join(au_holzmaar) %>% 
+  mutate(source = "author")
+  
 
 
 #Combining datasets --------------

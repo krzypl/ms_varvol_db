@@ -1,6 +1,6 @@
 library(tidyverse)
 library(ggrepel)
-#plot anomalies 
+#plot anomalies------
 full_ds_an <- read_csv("data/full_ds_an.csv") %>% 
   pivot_longer(cols = summer_1816_temp_an:winter_1816_17_prec_an,
                names_to = "anomaly", values_to = "value_of_anomaly") %>% 
@@ -9,6 +9,16 @@ full_ds_an <- read_csv("data/full_ds_an.csv") %>%
 anomalies_plot <- ggplot(full_ds_an, aes(y = lake_name, x = value_of_anomaly)) +
   geom_col() +
   facet_wrap(.~ anomaly, scales = "free")
+
+#plot varve links to climate-------
+varve2climate <- tribble(
+  ~lake_name, ~climate_var, ~season, ~strength, ~other_drivers,
+  "Ayr Lake", "uncertain", NA, NA, NA,
+  "Big Round Lake", "temperature", "summer", r = 0.46, NA,
+  "Blue Lake", "temperature", "summer", r2 = 0.31, NA,
+  "C2", "uncertain", NA, NA, NA,
+  
+)
 
 #plot varve thickness time series -------
 

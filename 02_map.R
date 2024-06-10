@@ -23,7 +23,7 @@ simple_map <- ggplot() +
   geom_text_repel(data = full_ds, aes(x = lon, y = lat, label = lake_name), size = 4, color = "darkgreen")
 
 #Boreal summer temperature anomaly map------
-
+#####The data for climate anomaly maps can be obtained from https://www.wdc-climate.de/ui/entry?acronym=EKF400_ens_mem_Mean_v2.0 following registration. Here the time range for the downloaded data was set to 1766-1866
 ekf_names <- list.files(path = "data/ekf400_ens_mem_mean", full.names = TRUE) #get names for data files
 nc_data_list <- lapply(ekf_names, nc_open) #data for the reference period 1766-1866
 
