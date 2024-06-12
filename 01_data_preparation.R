@@ -284,26 +284,42 @@ gsa_long <- gsa_kenai %>%
   mutate(source = "GSA")
 
 #Data obtained from authors ---------
-au_czechowskie <- read_csv("data/slowinski_et_al_2021_czechowskie.csv")
+#au_czechowskie <- read_csv("data/slowinski_et_al_2021_czechowskie.csv")
 au_kusai <- read_csv("data/zhang_et_al_2022_kusai.csv")
 au_nar_golu <- read_csv("data/woodbridge_2009_nar_golu.csv")
-au_holzmaar <- read_csv("data/holzmaar.csv")
+au_holzmaar <- read_csv("data/zolitschka_et_al_2000_holzmaar.csv")
+au_zabinskie <- read_csv("data/zarczynski_et_al_2019_zabinskie.csv")
 
-au_long <- au_czechowskie %>% 
-  full_join(au_kusai) %>% 
+au_long <- au_kusai %>% 
+#  au_czechowskie %>% #interpolated data close to 1816
   full_join(au_nar_golu) %>% 
   full_join(au_holzmaar) %>% 
+  full_join(au_zabinskie) %>% 
   mutate(source = "author")
   
 
 
 #Combining datasets --------------
-full_ds <- varda_long_red %>% 
+full_ds_prep <- varda_long_red %>% 
   full_join(pang_long) %>% 
   full_join(noaa_long) %>% 
-  full_join(gsa_long) %>% 
-  full_join(au_long) %>% 
-  dplyr::select(lake_name, lat, lon, age_CE, varve_thick, light_lamin_thick, dark_lamin_thick, ref) %>% 
-  filter(age_CE >= 1600)
-  
+#  full_join(gsa_long) %>% #data are expressed as %
+  full_join(au_long) %>%
+  filter(age_CE >= 1600) %>% 
+  pivot_longer(cols = contains("thick"), values_to = "thickness", names_to = "layer") %>% 
+  mutate(x = ifelse(layer == "varve_thick", "varve", layer),
+         y = ifelse(layer == "light_lamin_thick", "light layer", x),
+         layer = ifelse(y == "dark_lamin_thick", "dark layer", y)) %>% 
+  dplyr::select(lake_name, lat, lon, age_CE, layer, thickness, source, ref) %>% 
+  filter(!is.na(thickness)) %>% 
+  filter(!c(lake_name == "Chala" & layer == "dark layer")) #low precission data
+
+varve2remove_prep <- full_ds_prep %>% 
+  filter(layer == "dark layer" | layer == "light layer")
+
+varve2remove <- unique(varve2remove_prep$lake_name)
+
+full_ds <- full_ds_prep %>% 
+  filter(!c(lake_name %in% varve2remove & layer == "varve"))
+
 write_csv(full_ds, "data/full_ds.csv")

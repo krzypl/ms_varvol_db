@@ -1,100 +1,88 @@
 library(tidyverse)
 
-#In the functions: for ti < window_width and ti > tn - window width, the moving median and mad the "missing" data necessery to calculate the parameters were substituted with pseudodata. The genaration of pseudodata followed the method desribed by Cowling and Hall (1996) that relies on mirroring data that are within the range of [T(1);T(n)]. Eq. 6.35 in Mudelsee, p. 237
 #functions--------
-moving_median_extended <- function(x, window_size = 15) {
-  y <- vector("numeric", length(x))
-  window_half <- floor(window_size / 2)
-  x2 <- c(x[(1+((window_size/2)-0.5)):2], x, x[(length(x)-1):(length(x)-((window_size/2)-0.5))])
+moving_median <- function(x, window_size = 15) {
+  n <- length(x)
+  y <- vector("numeric", n)
+  y[] <- NA  # Initialize with NAs
   
-  # Calculate moving median for middle elements
-  for (i in 1:(length(x2)-window_size+1)) {
-    y[i] = median(x2[i:(i + window_size - 1)])
+  for (i in 1:(n - window_size + 1)) {
+    y[i + floor(window_size / 2)] <- median(x[i:(i + window_size - 1)], na.rm = TRUE)
   }
   
   return(y)
 }
 
 #median absolute distance (MAD)
-median_absolute_distance <- function(x, s_i, window_size = 5) {
-  y <- vector("numeric", length(x))
-  window_half <- floor(window_size / 2)
-  x2 <- c(x[(1+((window_size/2)-0.5)):2], x, x[(length(x)-1):(length(x)-((window_size/2)-0.5))]) #x is varve thickncess
-  s_i2 <- c(s_i[(1+((window_size/2)-0.5)):2], s_i, s_i[(length(s_i)-1):(length(s_i)-((window_size/2)-0.5))]) #s_i is moving average
-  x_s_i_diff <- abs(x2 - s_i2)
+median_absolute_distance <- function(x, s_i, window_size = 15) {
+  n <- length(x)
+  y <- vector("numeric", n)
+  y[] <- NA  # Initialize with NAs
   
-  for (i in 1:(length(x_s_i_diff)-window_size+1)) {
-    y[i] = median(x_s_i_diff[i:(i + window_size - 1)])
+  x_s_i_diff <- abs(x - s_i)
+  
+  for (i in 1:(n - window_size + 1)) {
+    y[i + floor(window_size / 2)] <- median(x_s_i_diff[i:(i + window_size - 1)], na.rm = TRUE)
   }
   
   return(y)
 }
 
-#
-full_ds <- read_csv("data/full_ds.csv") %>% 
-  filter(age_CE > 1765 & age_CE < 1867) %>%
-  group_by(lake_name) %>% 
-  mutate(moving_median_tvt = moving_median_extended(varve_thick, window_size = 15),
-         moving_median_llt =
-           moving_median_extended(light_lamin_thick, window_size = 15),
-         moving_median_dlt = 
-           moving_median_extended(dark_lamin_thick, window_size = 15),
-         mad_tvt = median_absolute_distance(x = varve_thick, s_i = moving_median_tvt,
-                                  window_size = 15),
-         mad_llt = 
-           median_absolute_distance(x = light_lamin_thick, s_i = moving_median_llt,
-                                            window_size = 15),
-         mad_dlt = 
-           median_absolute_distance(x = dark_lamin_thick, s_i = moving_median_dlt,
-                                            window_size = 15),
-         tresh_pos_tvt_z2 = moving_median_tvt + mad_tvt*2,
-         tresh_pos_llt_z2 = moving_median_llt + mad_llt*2,
-         tresh_pos_dlt_z2 = moving_median_dlt + mad_dlt*2,
-         tresh_pos_tvt_z3_5 = moving_median_tvt + mad_tvt*3.5,
-         tresh_pos_llt_z3_5 = moving_median_llt + mad_llt*3.5,
-         tresh_pos_dlt_z3_5 = moving_median_dlt + mad_dlt*3.5,
-         tresh_pos_tvt_z5 = moving_median_tvt + mad_tvt*5,
-         tresh_pos_llt_z5 = moving_median_llt + mad_llt*5,
-         tresh_pos_dlt_z5 = moving_median_dlt + mad_dlt*5,
-         tresh_neg_tvt_z1 = moving_median_tvt - mad_tvt*1,
-         tresh_neg_llt_z1 = moving_median_llt - mad_llt*1,
-         tresh_neg_dlt_z1 = moving_median_dlt - mad_dlt*1,
-         tresh_neg_tvt_z1_75 = moving_median_tvt - mad_tvt*1.75,
-         tresh_neg_llt_z1_75 = moving_median_llt - mad_llt*1.75,
-         tresh_neg_dlt_z1_75 = moving_median_dlt - mad_dlt*1.75,
-         tresh_neg_tvt_z2_5 = moving_median_tvt - mad_tvt*2.5,
-         tresh_neg_llt_z2_5 = moving_median_llt - mad_llt*2.5,
-         tresh_neg_dlt_z2_5 = moving_median_dlt - mad_dlt*2.5
-         ) %>% 
-  ungroup()
+#plots--------
+full_ds <- read_csv("data/full_ds.csv")
 
-tvt_plot <- full_ds %>% 
-  filter(!is.na(varve_thick)) %>% 
+full_ds <- full_ds %>% 
+  filter(age_CE >= 1766-7-7 & age_CE <= 1866+7+7) %>% 
+  group_by(lake_name, layer) %>% 
+  mutate(mm = moving_median(thickness),
+         mad = median_absolute_distance(thickness, mm)) %>% 
+  mutate(tresh_pos_z2 = mm + mad*2,
+         tresh_pos_z3_5 = mm + mad*3.5,
+         tresh_pos_z5 = mm + mad*5,
+         tresh_neg_z1 = mm - mad*1,
+         tresh_neg_z1_75 = mm - mad*1.75,
+         tresh_neg_z2_5 = mm - mad*2.5,
+         ) %>% 
+  ungroup() %>% 
+  filter(age_CE >= 1766 & age_CE <= 1866)
+
+mm <- full_ds4_mm %>% 
+  group_by(lake_name, layer) %>% 
+  transmute(mm = moving_median(thickness))
+
+custom_labeller <- function(labels) {
+  labels <- as.data.frame(labels)
+  labels$combined <- paste(labels$lake_name, labels$layer, sep = " - ")
+  labels <- labels %>% dplyr::select(combined)
+  return(labels)
+}
+
+treshold_plot <- full_ds %>%
   ggplot() +
-  geom_line(aes(x = age_CE, y = varve_thick), linewidth = 0.2) +
-  geom_point(aes(x = age_CE, y = varve_thick)) +
-  geom_line(aes(x = age_CE, y = moving_median_tvt), color = "red") +
-  geom_line(aes(x = age_CE, y = tresh_pos_tvt_z2), color = "orange") +
-  geom_line(aes(x = age_CE, y = tresh_pos_tvt_z3_5), color = "darkorange2") +
-  geom_line(aes(x = age_CE, y = tresh_pos_tvt_z5), color = "darkorange4") +
-  geom_line(aes(x = age_CE, y = tresh_neg_tvt_z1), color = "lightblue") +
-  geom_line(aes(x = age_CE, y = tresh_neg_tvt_z1_75), color = "blue") +
-  geom_line(aes(x = age_CE, y = tresh_neg_tvt_z2_5), color = "darkblue") +
+  geom_line(aes(x = age_CE, y = thickness), linewidth = 0.2) +
+  geom_point(aes(x = age_CE, y = thickness)) +
+  geom_line(aes(x = age_CE, y = mm), color = "red") +
+  geom_line(aes(x = age_CE, y = tresh_pos_z2), color = "orange") +
+  geom_line(aes(x = age_CE, y = tresh_pos_z3_5), color = "darkorange2") +
+  geom_line(aes(x = age_CE, y = tresh_pos_z5), color = "darkorange4") +
+  geom_line(aes(x = age_CE, y = tresh_neg_z1), color = "lightblue") +
+  geom_line(aes(x = age_CE, y = tresh_neg_z1_75), color = "blue") +
+  geom_line(aes(x = age_CE, y = tresh_neg_z2_5), color = "darkblue") +
   annotate("rect",
            xmin = 1816 - 7, xmax = 1816 + 7, ymin = -Inf, ymax = Inf,
            alpha = 0.1, fill = "blue") +
   geom_vline(xintercept = 1816, color = "blue") +
-  facet_wrap(.~ lake_name, scales = "free_y")
+  facet_wrap(vars(lake_name, layer), scales = "free_y", ncol = 3, labeller = custom_labeller)
  
-n_of_out_tvt <- full_ds %>% 
-  filter(!is.na(varve_thick)) %>% 
-  group_by(lake_name) %>% 
-  summarise(n_pos_z2 = sum(varve_thick > tresh_pos_tvt_z2),
-            n_pos_z3_5 = sum(varve_thick > tresh_pos_tvt_z3_5),
-            n_pos_z5 = sum(varve_thick > tresh_pos_tvt_z5),
-            n_neg_z1 = sum(varve_thick < tresh_neg_tvt_z1),
-            n_neg_z1_75 = sum(varve_thick < tresh_neg_tvt_z1_75),
-            n_neg_z2_5 = sum(varve_thick < tresh_neg_tvt_z2_5)) %>% 
+n_of_out <- full_ds %>%
+  filter(!is.na(mm)) %>% 
+  group_by(lake_name, layer) %>% 
+  summarise(n_pos_z2 = sum(thickness > tresh_pos_z2),
+            n_pos_z3_5 = sum(thickness > tresh_pos_z3_5),
+            n_pos_z5 = sum(thickness > tresh_pos_z5),
+            n_neg_z1 = sum(thickness < tresh_neg_z1),
+            n_neg_z1_75 = sum(thickness < tresh_neg_z1_75),
+            n_neg_z2_5 = sum(thickness < tresh_neg_z2_5)) %>% 
   pivot_longer(cols = n_pos_z2:n_neg_z2_5, names_to = "treshold_prep",
                values_to = "n_of_extremes") %>% 
   mutate(treshold = as.factor(ifelse(grepl("neg", treshold_prep), "neg", "pos")),
@@ -107,25 +95,24 @@ n_of_out_tvt <- full_ds %>%
            grepl("z5$", treshold_prep) ~ "5",
            TRUE ~ NA_character_))) 
 
-n_of_out_tvt_plot <- ggplot(n_of_out_tvt,
+n_of_out_plot <- ggplot(n_of_out,
                             aes(x = treshold, y = n_of_extremes, fill = z)) +
   geom_col(position = position_dodge(width = 0.9)) +
-  facet_wrap(.~ lake_name)
+  facet_wrap(vars(lake_name, layer))
 
-scales_out_tvt <- full_ds %>% 
-  filter(!is.na(varve_thick)) %>% 
-  filter(varve_thick < tresh_neg_tvt_z2_5 | varve_thick > tresh_pos_tvt_z5) %>%
-  dplyr::select(lake_name, age_CE, tresh_pos_tvt_z5,
-         tresh_neg_tvt_z2_5, varve_thick, moving_median_tvt, mad_tvt) %>% 
-  mutate(scaled_magnitude = (varve_thick - moving_median_tvt)/mad_tvt,
+scales_out <- full_ds %>% 
+  filter(thickness < tresh_neg_z2_5 | thickness > tresh_pos_z5) %>%
+  dplyr::select(lake_name, layer, age_CE, tresh_pos_z5,
+         tresh_neg_z2_5, thickness, mm, mad) %>% 
+  mutate(scaled_magnitude = (thickness - mm)/mad,
          scaled_magnitude_sign = as.factor(ifelse(scaled_magnitude > 0, "positive", "negative")))
 
-scales_out_tvt_plot <- ggplot(scales_out_tvt, aes(x = age_CE, y = scaled_magnitude, fill = scaled_magnitude_sign)) +
+scales_out_plot <- ggplot(scales_out, aes(x = age_CE, y = scaled_magnitude, fill = scaled_magnitude_sign)) +
   geom_col() +
   annotate("rect",
            xmin = 1816 - 7, xmax = 1816 + 7, ymin = -Inf, ymax = Inf,
            alpha = 0.1, fill = "blue") +
   geom_vline(xintercept = 1816, color = "blue") +
-  facet_wrap(.~ lake_name, scales = "free_y") +
+  facet_wrap(vars(lake_name, layer), scales = "free_y") +
   theme(legend.position = "bottom")
   

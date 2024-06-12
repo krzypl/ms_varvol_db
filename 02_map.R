@@ -68,18 +68,24 @@ full_ds_sf_prep <- full_ds
 
 coordinates(full_ds_sf_prep) <- ~lon + lat
 proj4string(full_ds_sf_prep) <- CRS("+proj=longlat +datum=WGS84")
-full_ds_sf <- st_as_sf(full_ds_sf_prep)
+full_ds_sf <- st_as_sf(full_ds_sf_prep) %>% 
+  mutate(no = factor(1:length(lake_name)))
 
 tm_shape(summer_r) + 
-  tm_raster(style = "cont", palette = "-RdBu", n = 20, title = "Temperature", legend.reverse = TRUE) +
+  tm_raster(style = "cont", palette = "-RdBu", n = 20, title = "Temperature anomaly (°C)", legend.reverse = FALSE, legend.is.portrait = FALSE) +
   tm_shape(countries) + 
   tm_borders(lwd = 1, col = "black") +
   tm_shape(full_ds_sf) +
-  tm_symbols(size = 0.5, col = "red", border.col = "black") +
-  tm_layout(legend.outside = TRUE,
+  tm_symbols(size = 0.5, col = "lightgreen", alpha = 0.8, border.col = "black") +
+  tm_shape(full_ds_sf) +
+  tm_text("no", col = "black", bg.color = "white", bg.alpha = 0.6, shadow = TRUE, auto.placement = 0.01, fontface = "bold") +
+  tm_layout(legend.position = c("right", "bottom"),
+            legend.bg.color = "white",
+            legend.bg.alpha = 0.6,
             frame = TRUE,
+            legend.width = 1,
             main.title = "Boreal summer temperature anomaly in 1816 with respect to 1766-1866 mean",
-            main.title.position = 0,
+            main.title.position = 0.05,
             main.title.size = 1) +
   tm_grid(labels.size = 0.5,  # Adjust label size
     labels.inside.frame = FALSE,  # Labels outside frame
@@ -114,12 +120,11 @@ ekf_1816_prec <- get_prec(ekf_1816)
 ekf_1816_summer_prec_prep <- extract_summer_prec(ekf_1816_prec)
 ekf_1816_summer_mean_prec <- apply(ekf_1816_summer_prec_prep, MARGIN = c(1, 2), FUN = mean)
 
-summer_prec_anomaly_1816 <- summer_prec_mean - ekf_1816_summer_mean_prec
-summer_prec_anomaly_1816_perc_prep <- summer_prec_anomaly_1816/summer_prec_mean
-summer_prec_anomaly_1816_perc <- summer_prec_anomaly_1816_perc_prep*(-100)
 
-summer_prec_anomaly_1816_perc[summer_prec_anomaly_1816_perc == min(summer_prec_anomaly_1816_perc)] <- NA #replace outlier with NA
-summer_prec_anomaly_1816_perc[summer_prec_anomaly_1816_perc > 210] <- NA #most of the very high values appears erronous
+summer_prec_anomaly_1816_perc <- (ekf_1816_summer_mean_prec/summer_prec_mean)*100
+summer_prec_anomaly_1816_perc[summer_prec_anomaly_1816_perc < 0] <- NA
+
+summer_prec_anomaly_1816_perc[summer_prec_anomaly_1816_perc > 400] <- NA #most of the very high values appears erronous
 
 lapply(nc_data_list, nc_close)
 
@@ -128,15 +133,20 @@ summer_prec_r_prep <- raster(t(summer_prec_anomaly_1816_perc), xmn=min(longitude
 summer_prec_r <- raster::rotate(summer_prec_r_prep)
 
 tm_shape(summer_prec_r) + 
-  tm_raster(style = "cont", palette = "BrBG", n = 20, title = "Precipitation anomaly (%)", legend.reverse = TRUE) +
+  tm_raster(style = "cont", palette = "BrBG", midpoint = 100, n = 20, title = "Precipitation with respect to reference period (%)", legend.reverse = FALSE, legend.is.portrait = FALSE) +
   tm_shape(countries) + 
   tm_borders(lwd = 1, col = "black") +
   tm_shape(full_ds_sf) +
-  tm_symbols(size = 0.5, col = "red", border.col = "black") +
-  tm_layout(legend.outside = TRUE,
+  tm_symbols(size = 0.5, col = "lightgreen", alpha = 0.8, border.col = "black") +
+  tm_shape(full_ds_sf) +
+  tm_text("no", col = "black", bg.color = "white", bg.alpha = 0.6, shadow = TRUE, auto.placement = 0.01, fontface = "bold") +
+  tm_layout(legend.position = c("right", "bottom"),
+            legend.bg.color = "white",
+            legend.bg.alpha = 0.6,
             frame = TRUE,
-            main.title = "Boreal summer precipitation anomaly in 1816 with respect to 1766-1866 mean",
-            main.title.position = 0,
+            main.title = "Boreal summer precipitation percentages in 1816 with respect to 1766-1866 mean",
+            main.title.position = 0.05,
+            legend.width = 1,
             main.title.size = 1) +
   tm_grid(labels.size = 0.5,  # Adjust label size
           labels.inside.frame = FALSE,  # Labels outside frame
@@ -177,15 +187,19 @@ winter_r_prep <- raster(t(winter_temp_anomaly_1816_17), xmn=min(longitude), xmx=
 winter_r <- raster::rotate(winter_r_prep)
 
 tm_shape(winter_r) + 
-  tm_raster(style = "cont", palette = "-RdBu", n = 20, title = "Temperature anomaly (°C)", legend.reverse = TRUE) +
+  tm_raster(style = "cont", palette = "-RdBu", n = 20, title = "Temperature anomaly (°C)", legend.reverse = FALSE, legend.is.portrait = FALSE) +
   tm_shape(countries) + 
   tm_borders(lwd = 1, col = "black") +
   tm_shape(full_ds_sf) +
-  tm_symbols(size = 0.5, col = "red", border.col = "black") +
-  tm_layout(legend.outside = TRUE,
+  tm_symbols(size = 0.5, col = "lightgreen", alpha = 0.8, border.col = "black") +
+  tm_shape(full_ds_sf) +
+  tm_text("no", col = "black", bg.color = "white", bg.alpha = 0.6, shadow = TRUE, auto.placement = 0.01, fontface = "bold") +
+  tm_layout(legend.position = c("right", "bottom"),
+            legend.bg.color = "white",
+            legend.width = 1,
             frame = TRUE,
             main.title = "Boreal winter temperature anomaly in 1816/1817 with respect to 1766-1866 mean",
-            main.title.position = 0,
+            main.title.position = 0.05,
             main.title.size = 1) +
   tm_grid(labels.size = 0.5,  # Adjust label size
           labels.inside.frame = FALSE,  # Labels outside frame
@@ -220,6 +234,11 @@ winter_prec_anomaly_1816_17 <- winter_prec_mean - ekf_1816_17_winter_prec_mean
 winter_prec_anomaly_1816__17_perc_prep <- winter_prec_anomaly_1816_17/winter_prec_mean
 winter_prec_anomaly_1816_17_perc <- winter_prec_anomaly_1816__17_perc_prep*(-100)
 
+winter_prec_anomaly_1816_17_perc <- (ekf_1816_17_winter_prec_mean/winter_prec_mean)*100
+winter_prec_anomaly_1816_17_perc[winter_prec_anomaly_1816_17_perc < 0] <- NA
+
+winter_prec_anomaly_1816_17_perc[winter_prec_anomaly_1816_17_perc > 300] <- NA #most of the very high values appears erronous
+
 lapply(nc_data_list, nc_close)
 
 winter_prec_r_prep <- raster(t(winter_prec_anomaly_1816_17_perc), xmn=min(longitude), xmx=max(longitude), ymn=min(latitude), ymx=max(latitude), crs=CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs+ towgs84=0,0,0"))
@@ -227,15 +246,20 @@ winter_prec_r_prep <- raster(t(winter_prec_anomaly_1816_17_perc), xmn=min(longit
 winter_prec_r <- raster::rotate(winter_prec_r_prep)
 
 tm_shape(winter_prec_r) + 
-  tm_raster(style = "cont", palette = "BrBG", n = 20, title = "Precipitation anomaly (%)", legend.reverse = TRUE) +
+  tm_raster(style = "cont", palette = "BrBG", midpoint = 100, n = 20, title = "Precipitation with respect to reference period (%)", legend.reverse = TRUE, legend.is.portrait = FALSE) +
   tm_shape(countries) + 
   tm_borders(lwd = 1, col = "black") +
   tm_shape(full_ds_sf) +
-  tm_symbols(size = 0.5, col = "red", border.col = "black") +
-  tm_layout(legend.outside = TRUE,
+  tm_symbols(size = 0.5, col = "lightgreen", alpha = 0.8, border.col = "black") +
+  tm_shape(full_ds_sf) +
+  tm_text("no", col = "black", bg.color = "white", bg.alpha = 0.6, shadow = TRUE, auto.placement = 0.01, fontface = "bold") +
+  tm_layout(legend.position = c("right", "bottom"),
+            legend.bg.color = "white",
+            legend.bg.alpha = 0.6,
             frame = TRUE,
-            main.title = "Boreal winter precipitation anomaly in 1816/1817 with respect to 1766-1866 mean",
-            main.title.position = 0,
+            legend.width = 1,
+            main.title = "Boreal winter precipitation percentages in 1816/1817 with respect to 1766-1866 mean",
+            main.title.position = 0.05,
             main.title.size = 1) +
   tm_grid(labels.size = 0.5,  # Adjust label size
           labels.inside.frame = FALSE,  # Labels outside frame
