@@ -13,7 +13,8 @@ library(abind)
 #read data------
 full_ds <- read_csv("data/full_ds.csv") %>% 
   mutate(lake_name = str_replace_all(lake_name, "_[1-3]", "")) %>% 
-  distinct(lake_name, .keep_all = TRUE)
+  distinct(lake_name, .keep_all = TRUE) %>% 
+  arrange(lake_name)
 
 #make a simple map------
 simple_map <- ggplot() +
@@ -71,7 +72,7 @@ proj4string(full_ds_sf_prep) <- CRS("+proj=longlat +datum=WGS84")
 full_ds_sf <- st_as_sf(full_ds_sf_prep) %>% 
   mutate(no = factor(1:length(lake_name)))
 
-tm_shape(summer_r) + 
+summer_r_map <- tm_shape(summer_r) + 
   tm_raster(style = "cont", palette = "-RdBu", n = 20, title = "Temperature anomaly (°C)", legend.reverse = FALSE, legend.is.portrait = FALSE) +
   tm_shape(countries) + 
   tm_borders(lwd = 1, col = "black") +
@@ -87,11 +88,14 @@ tm_shape(summer_r) +
             main.title = "Boreal summer temperature anomaly in 1816 with respect to 1766-1866 mean",
             main.title.position = 0.05,
             main.title.size = 1) +
-  tm_grid(labels.size = 0.5,  # Adjust label size
+  tm_grid(labels.size = 0.8,  # Adjust label size
     labels.inside.frame = FALSE,  # Labels outside frame
     lines = FALSE,  # Turn off grid lines
     ticks = TRUE,  # Add ticks
     labels.show = TRUE)
+
+tmap_save(summer_r_map, filename = "figures/summer_temp_anomaly.pdf")
+tmap_save(summer_r_map, filename = "figures/summer_temp_anomaly.svg")
 
 #Boreal summer precipitation anomaly-------
 ekf_names <- list.files(path = "data/ekf400_ens_mem_mean", full.names = TRUE) #get names for data files
@@ -132,7 +136,7 @@ summer_prec_r_prep <- raster(t(summer_prec_anomaly_1816_perc), xmn=min(longitude
 
 summer_prec_r <- raster::rotate(summer_prec_r_prep)
 
-tm_shape(summer_prec_r) + 
+summer_prec_r_map <- tm_shape(summer_prec_r) + 
   tm_raster(style = "cont", palette = "BrBG", midpoint = 100, n = 20, title = "Precipitation with respect to reference period (%)", legend.reverse = FALSE, legend.is.portrait = FALSE) +
   tm_shape(countries) + 
   tm_borders(lwd = 1, col = "black") +
@@ -148,11 +152,14 @@ tm_shape(summer_prec_r) +
             main.title.position = 0.05,
             legend.width = 1,
             main.title.size = 1) +
-  tm_grid(labels.size = 0.5,  # Adjust label size
+  tm_grid(labels.size = 0.8,  # Adjust label size
           labels.inside.frame = FALSE,  # Labels outside frame
           lines = FALSE,  # Turn off grid lines
           ticks = TRUE,  # Add ticks
           labels.show = TRUE)
+
+tmap_save(summer_prec_r_map, filename = "figures/summer_prec_anomaly.pdf")
+tmap_save(summer_prec_r_map, filename = "figures/summer_prec_anomaly.svg")
 
 #Boreal winter temperature anomaly in 1816/1817-----------
 ekf_names <- list.files(path = "data/ekf400_ens_mem_mean", full.names = TRUE) #get names for data files
@@ -186,7 +193,7 @@ winter_r_prep <- raster(t(winter_temp_anomaly_1816_17), xmn=min(longitude), xmx=
 
 winter_r <- raster::rotate(winter_r_prep)
 
-tm_shape(winter_r) + 
+winter_r_map <- tm_shape(winter_r) + 
   tm_raster(style = "cont", palette = "-RdBu", n = 20, title = "Temperature anomaly (°C)", legend.reverse = FALSE, legend.is.portrait = FALSE) +
   tm_shape(countries) + 
   tm_borders(lwd = 1, col = "black") +
@@ -201,11 +208,14 @@ tm_shape(winter_r) +
             main.title = "Boreal winter temperature anomaly in 1816/1817 with respect to 1766-1866 mean",
             main.title.position = 0.05,
             main.title.size = 1) +
-  tm_grid(labels.size = 0.5,  # Adjust label size
+  tm_grid(labels.size = 0.8,  # Adjust label size
           labels.inside.frame = FALSE,  # Labels outside frame
           lines = FALSE,  # Turn off grid lines
           ticks = TRUE,  # Add ticks
           labels.show = TRUE)
+
+tmap_save(winter_r_map, filename = "figures/winter_temp_anomaly.pdf")
+tmap_save(winter_r_map, filename = "figures/winter_temp_anomaly.svg")
 
 #Boreal winter precipitation anomaly in 1816/17--------
 ekf_names <- list.files(path = "data/ekf400_ens_mem_mean", full.names = TRUE) #get names for data files
@@ -245,7 +255,7 @@ winter_prec_r_prep <- raster(t(winter_prec_anomaly_1816_17_perc), xmn=min(longit
 
 winter_prec_r <- raster::rotate(winter_prec_r_prep)
 
-tm_shape(winter_prec_r) + 
+winter_prec_r_map <- tm_shape(winter_prec_r) + 
   tm_raster(style = "cont", palette = "BrBG", midpoint = 100, n = 20, title = "Precipitation with respect to reference period (%)", legend.reverse = TRUE, legend.is.portrait = FALSE) +
   tm_shape(countries) + 
   tm_borders(lwd = 1, col = "black") +
@@ -261,11 +271,14 @@ tm_shape(winter_prec_r) +
             main.title = "Boreal winter precipitation percentages in 1816/1817 with respect to 1766-1866 mean",
             main.title.position = 0.05,
             main.title.size = 1) +
-  tm_grid(labels.size = 0.5,  # Adjust label size
+  tm_grid(labels.size = 0.8,  # Adjust label size
           labels.inside.frame = FALSE,  # Labels outside frame
           lines = FALSE,  # Turn off grid lines
           ticks = TRUE,  # Add ticks
           labels.show = TRUE)
+
+tmap_save(winter_prec_r_map, filename = "figures/winter_prec_anomaly.pdf")
+tmap_save(winter_prec_r_map, filename = "figures/winter_prec_anomaly.svg")
 
 #extract anomaly values for the location of the lakes--------
 extracted_summer_temp_an <- raster::extract(summer_r, full_ds_sf)

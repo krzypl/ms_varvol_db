@@ -46,10 +46,6 @@ full_ds <- full_ds %>%
   ungroup() %>% 
   filter(age_CE >= 1766 & age_CE <= 1866)
 
-mm <- full_ds4_mm %>% 
-  group_by(lake_name, layer) %>% 
-  transmute(mm = moving_median(thickness))
-
 custom_labeller <- function(labels) {
   labels <- as.data.frame(labels)
   labels$combined <- paste(labels$lake_name, labels$layer, sep = " - ")
@@ -72,7 +68,19 @@ treshold_plot <- full_ds %>%
            xmin = 1816 - 7, xmax = 1816 + 7, ymin = -Inf, ymax = Inf,
            alpha = 0.1, fill = "blue") +
   geom_vline(xintercept = 1816, color = "blue") +
+  labs(x = "Age (year CE)", y = "Thickness (mm)") +
   facet_wrap(vars(lake_name, layer), scales = "free_y", ncol = 3, labeller = custom_labeller)
+
+ggsave(filename = "figures/treshold_plot.svg",
+       plot = treshold_plot,
+       width = 12.5,
+       height = 17,
+       device = "svg")
+ggsave(filename = "figures/treshold_plot.pdf",
+       plot = treshold_plot,
+       width = 12.5,
+       height = 17,
+       device = "pdf")
  
 n_of_out <- full_ds %>%
   filter(!is.na(mm)) %>% 
@@ -98,7 +106,19 @@ n_of_out <- full_ds %>%
 n_of_out_plot <- ggplot(n_of_out,
                             aes(x = treshold, y = n_of_extremes, fill = z)) +
   geom_col(position = position_dodge(width = 0.9)) +
-  facet_wrap(vars(lake_name, layer))
+  labs(x = "Type of treshold", y = "Number of extremes identified") +
+  facet_wrap(vars(lake_name, layer), ncol = 9)
+
+ggsave(filename = "figures/n_of_outliers_plot.svg",
+       plot = n_of_out_plot,
+       width = 12.5,
+       height = 17,
+       device = "svg")
+ggsave(filename = "figures/n_of_outliers_plot.pdf",
+       plot = n_of_out_plot,
+       width = 12.5,
+       height = 6,
+       device = "pdf")
 
 scales_out <- full_ds %>% 
   filter(thickness < tresh_neg_z2_5 | thickness > tresh_pos_z5) %>%
@@ -113,6 +133,18 @@ scales_out_plot <- ggplot(scales_out, aes(x = age_CE, y = scaled_magnitude, fill
            xmin = 1816 - 7, xmax = 1816 + 7, ymin = -Inf, ymax = Inf,
            alpha = 0.1, fill = "blue") +
   geom_vline(xintercept = 1816, color = "blue") +
-  facet_wrap(vars(lake_name, layer), scales = "free_y") +
+  labs(x = "Age (year CE)", y = "Scaled magnitude of anomaly") +
+  facet_wrap(vars(lake_name, layer), labeller = custom_labeller, scales = "free_y", ncol = 4) +
   theme(legend.position = "bottom")
+
+ggsave(filename = "figures/scales_outlier_plot.svg",
+       plot = scales_out_plot,
+       width = 12.5,
+       height = 17,
+       device = "svg")
+ggsave(filename = "figures/scales_outlier_plot.pdf",
+       plot = scales_out_plot,
+       width = 12.5,
+       height = 12,
+       device = "pdf")
   
