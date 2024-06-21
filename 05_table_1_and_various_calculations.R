@@ -68,7 +68,7 @@ table_1 <- full_ds %>%
          label = lake_name,
          source = str_replace(source, "NOAA", "WDS-Paleo"),
          No = 1:length(lake_name)) %>%
-  select(No, ID, lake_name, label, lat, lon, source, layer, ref) %>%
+  dplyr::select(No, ID, lake_name, label, lat, lon, source, layer, ref) %>%
   mutate(lake_name = str_replace_all(lake_name, "_[1-3]", "")) %>% 
   rename(`No.` = No, "Lake name" = lake_name, "Record label" = label, Latitude = lat, Longitude = lon, "Data source" = source, Reference = ref, "Thickness of" = layer) %>% 
   mutate(ID = dense_rank(`Lake name`)) %>% 

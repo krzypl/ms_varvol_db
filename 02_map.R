@@ -293,5 +293,3 @@ full_ds_an <- full_ds %>%
          winter_1816_17_prec_an = extracted_winter_prec_an)
 
 write_csv(full_ds_an, "data/full_ds_an.csv")
-
-
