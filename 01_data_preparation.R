@@ -143,7 +143,11 @@ varda_long_red <- varda_long_red %>%
   filter(!lake_name == "Iceberg Lake_3") %>% #the record does not cover the whole period 1766-1866
   dplyr::select(!names) %>% 
   mutate(lake_name = ifelse(lake_name == "East Lake", "East Lake_1", lake_name),
-         source = "VARDA") #there is another record from East Lake available from Pangaea. To distinguish between these two the number is given to each
+         source = "VARDA",
+         ref = str_replace(ref, 
+                           "Bird, B.W. et al., 2008. A 2000 year varve-based climate record from the central Brooks Range, Alaska. Journal.",
+                           "Bird, B.W. et al., 2009. A 2000 year varve-based climate record from the central Brooks Range, Alaska. Journal."))
+
 
 #PANGAEA----------
 
@@ -284,17 +288,19 @@ gsa_long <- gsa_kenai %>%
   mutate(source = "GSA")
 
 #Data obtained from authors ---------
-#au_czechowskie <- read_csv("data/slowinski_et_al_2021_czechowskie.csv")
+au_czechowskie <- read_csv("data/slowinski_et_al_2021_czechowskie.csv")
 au_kusai <- read_csv("data/zhang_et_al_2022_kusai.csv")
 au_nar_golu <- read_csv("data/woodbridge_2009_nar_golu.csv")
 au_holzmaar <- read_csv("data/zolitschka_et_al_2000_holzmaar.csv")
 au_zabinskie <- read_csv("data/zarczynski_et_al_2019_zabinskie.csv")
+au_kuninkaisenlampi <- read_csv("data/saarni_et_al_2016_kuninkaisenlampi.csv")
 
 au_long <- au_kusai %>% 
-#  au_czechowskie %>% #interpolated data close to 1816
+#  full_join(au_czechowskie) %>% #interpolated data close to 1816 affect treshold position
   full_join(au_nar_golu) %>% 
   full_join(au_holzmaar) %>% 
   full_join(au_zabinskie) %>% 
+  full_join(au_kuninkaisenlampi) %>% 
   mutate(source = "author")
   
 
