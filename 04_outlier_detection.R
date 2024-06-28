@@ -1,79 +1,9 @@
 library(tidyverse)
-
-#functions--------
-moving_median <- function(x, window_size = 21) {
-  n <- length(x)
-  y <- vector("numeric", n)
-  y[] <- NA  # Initialize with NAs
-  
-  for (i in 1:(n - window_size + 1)) {
-    y[i + floor(window_size / 2)] <- median(x[i:(i + window_size - 1)], na.rm = TRUE)
-  }
-  
-  return(y)
-}
-
-#median absolute distance (MAD)
-median_absolute_distance <- function(x, window_size = 21) {
-  n <- length(x)
-  y <- vector("numeric", n)
-  y[] <- NA  # Initialize with NAs
-  
-  for (i in 1:(n - window_size + 1)) {
-    y[i + floor(window_size / 2)] <- 
-      median(abs(median(x[i:(i + window_size - 1)])-x[i:(i + window_size - 1)]), na.rm = TRUE)
-  }
-  
-  return(y)
-}
+source("functions/moving_median.R")
+source("functions/median_absolute_distance.R")
+source("functions/calculate_C1.R")
 
 #median cross-validation criterion for selecting optimum k (window_size = 2*k+1) based on Zheng and Yang (1998); the minimum k is set to 6 and maximum k is 14. The range of possible k is selected to enable for reasonable decadal variations
-calculate_C1 <- function(x) {
-  n <- length(x)
-  k_start <- 6
-  k_end <- 14
-  
-  # Initialize variables to store results
-  C1_values <- numeric(k_end - k_start + 1)  # To store C1 values for each k
-  min_index <- NA  # Initialize variable to store index of minimum C1 value
-  
-  for (k in k_start:k_end) {
-    sum_abs_diff <- 0
-    
-    for (i in 1:n) {
-      # Define the indices for the neighborhood
-      start_index <- max(1, i - k)
-      end_index <- min(n, i + k)
-      neighborhood <- x[start_index:end_index]
-      
-      # Exclude the current element x[i]
-      neighborhood <- neighborhood[neighborhood != x[i]]
-      
-      # Calculate the delete-one median
-      if (length(neighborhood) > 0) {
-        delete_one_median <- median(neighborhood)
-      } else {
-        delete_one_median <- NA
-      }
-      
-      # Compute the absolute difference
-      abs_diff <- abs(x[i] - delete_one_median)
-      sum_abs_diff <- sum_abs_diff + abs_diff
-    }
-    
-    # Calculate the final value of C1(k)
-    C1_k <- sum_abs_diff / n
-    C1_values[k - k_start + 1] <- C1_k
-  }
-  
-  # Find the index of the minimum non-NA C1 value
-  valid_indices <- which(!is.na(C1_values))
-  if (length(valid_indices) > 0) {
-    min_index <- valid_indices[which.min(C1_values[valid_indices])] + k_start - 1
-  }
-  
-  return(min_index)
-}
 
 #plots--------
 full_ds <- read_csv("data/full_ds.csv")
@@ -96,7 +26,9 @@ full_ds <- full_ds %>%
   filter(age_CE >= 1766 & age_CE <= 1866) %>% 
   arrange(lake_name, layer)
 
-win_size_lab <- paste("(", 2*(distinct(full_ds, lake_name, layer, .keep_all = TRUE))$k + 1, ")", sep = "")
+win_size_lab <- paste("(",
+                      2*(distinct(full_ds, lake_name, layer,
+                                  .keep_all = TRUE))$k + 1, ")", sep = "")
 
 custom_labeller <- function(labels) {
   labels <- as.data.frame(labels)
@@ -153,12 +85,14 @@ n_of_out <- full_ds %>%
   mutate(treshold = as.factor(ifelse(grepl("neg", treshold_prep), "neg", "pos")),
          z = as.factor(case_when(
            grepl("z1$", treshold_prep) ~ "1",
-           grepl("z1_75$", treshold_prep) ~ "1_75",
+           grepl("z1_75$", treshold_prep) ~ "1.75",
            grepl("z2$", treshold_prep) ~ "2",
-           grepl("z2_5$", treshold_prep) ~ "2_5",
-           grepl("z3_5$", treshold_prep) ~ "3_5",
+           grepl("z2_5$", treshold_prep) ~ "2.5",
+           grepl("z3_5$", treshold_prep) ~ "3.5",
            grepl("z5$", treshold_prep) ~ "5",
            TRUE ~ NA_character_))) 
+
+write_csv(n_of_out, "data/n_of_out.csv")
 
 n_of_out_plot <- ggplot(n_of_out,
                         aes(x = treshold, y = n_of_extremes, fill = z)) +
@@ -183,17 +117,122 @@ scales_out <- full_ds %>%
   dplyr::select(lake_name, layer, age_CE, tresh_pos_z5,
                 tresh_neg_z2_5, thickness, mm, mad) %>% 
   mutate(scaled_magnitude = (thickness - mm)/mad,
-         scaled_magnitude_sign = as.factor(ifelse(scaled_magnitude > 0, "positive", "negative")))
+         scaled_magnitude_sign = as.factor(ifelse(scaled_magnitude > 0, "positive", "negative")),
+         record_label = paste(lake_name, layer, sep = " - "))
 
-scales_out_plot <- ggplot(scales_out, aes(x = age_CE, y = scaled_magnitude, fill = scaled_magnitude_sign)) +
-  geom_col() +
+write_csv(scales_out, "data/scales_out.csv")
+
+custom_labeller2 <- function(labels) {
+  labels <- as.data.frame(labels)
+  labels$combined <- labels$record_label
+  labels <- labels %>% dplyr::select(combined)
+  return(labels)
+}
+
+scales_out_plot_prep <- ggplot(scales_out, aes(x = age_CE, y = scaled_magnitude, fill = scaled_magnitude_sign)) +
   annotate("rect",
            xmin = 1816 - 7, xmax = 1816 + 7, ymin = -Inf, ymax = Inf,
            alpha = 0.1, fill = "blue") +
-  geom_vline(xintercept = 1816, color = "blue") +
+  geom_vline(xintercept = 1816, color = "blue", linewidth = 0.1) +
+  geom_col() +
   labs(x = "Age (year CE)", y = "Scaled magnitude of anomaly") +
-  facet_wrap(vars(lake_name, layer), labeller = custom_labeller, scales = "free_y", ncol = 4) +
+  facet_wrap(vars(record_label, layer), labeller = custom_labeller2, scales = "free_y", ncol = 4) +
   theme(legend.position = "bottom")
+
+records_red <- scales_out %>% # used later to extract records clearly missing imprint of yws
+  filter(age_CE >= 1816 - 7 & age_CE <= 1816 + 7) %>% 
+  group_by(record_label) %>%
+  summarise(n = n()) 
+
+records_orange <- scales_out %>% # used later to extract records for which imprint of yws is unlikely
+  distinct(record_label, .keep_all = TRUE) %>% 
+  filter(record_label %in% c("Chala - light layer",
+                             "Donard - varve",
+                             "DV09 - varve",
+                             "Lower Murray Lake - varve",
+                             "Sawtooth - varve")) 
+
+records_yellow <- scales_out %>% 
+  distinct(record_label, .keep_all = TRUE) %>% 
+  filter(record_label %in% c("Ayr Lake - varve",
+                             "East Lake_1 - varve",
+                             "East Lake_2 - varve",
+                             "Green Lake - varve",
+                             "Iceberg Lake_1 - varve",
+                             "Iceberg Lake_2 - varve",
+                             "Kuninkaisenlampi - dark layer",
+                             "Kusai - light layer",
+                             "Lagoon Etoliko - dark layer",
+                             "Nautajärvi - dark layer",
+                             "Ogac - dark layer",
+                             "Plomo - varve",
+                             "Żabińskie - dark layer",
+                             "Żabińskie - light layer"
+                             ))
+
+records_green <- scales_out %>% 
+  distinct(record_label, .keep_all = TRUE) %>% 
+  filter(record_label %in% c("Holzmaar - varve",
+                             "Kuninkaisenlampi - light layer",
+                             "Kusai - dark layer",
+                             "Nar Gölü - light layer",
+                             "Oeschinen - varve"
+  ))
+
+scales_out3 <- scales_out %>% 
+  mutate(red_category = ifelse(!record_label %in% records_red$record_label, 
+                               "red", NA),
+         ro_cat = ifelse(record_label %in% records_orange$record_label,
+                         "orange", red_category),
+         roy_cat = ifelse(record_label %in% records_yellow$record_label,
+                          "yellow", ro_cat),
+         royg_cat = ifelse(record_label %in% records_green$record_label,
+                           "green", roy_cat),
+         yws_cat = as.factor(royg_cat)) %>% 
+  select(!c(red_category, ro_cat, roy_cat, royg_cat)) %>% 
+  mutate(xmin = -Inf,
+         xmax = Inf,
+         ymin = -Inf,
+         ymax = Inf) %>% 
+  distinct(record_label, .keep_all = TRUE) %>% 
+  mutate(xmin_yws = 1816-7,
+         xmax_yws = 1816+7,
+         yws_range = factor('blue'),
+         yws = factor('darkblue'),
+         yws_year = 1816)
+
+scales_out3$yws_cat <- factor(scales_out3$yws_cat, levels = c(
+  "red", "orange", "yellow", "green"
+))
+
+scales_out_plot <- scales_out_plot_prep +
+  geom_rect(data = scales_out3, aes(xmin = xmin_yws, xmax = xmax_yws, ymin = ymin, ymax = ymax, fill = yws_range), alpha = 0.3) +
+  geom_rect(data = scales_out3, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = yws_cat), alpha = 0.3) +
+  geom_vline(data = scales_out3, aes(xintercept = yws_year, color = yws), linewidth = 0.1) +
+  geom_col(data = scales_out, aes(x = age_CE, y = scaled_magnitude, fill = scaled_magnitude_sign)) +
+  scale_fill_manual(
+    name = NULL,
+    values = c(
+    'negative' = 'blueviolet',
+    'positive' = 'red4',
+    'red' = "red",
+    'orange' = 'orange',
+    'yellow' = 'yellow',
+    'green' = 'green',
+    'blue' = 'blue'),
+    labels = c(
+      'negative' = 'negative anomaly',
+      'positive' = 'positive anomaly',
+      'red' = 'YWS imprint missing',
+      'orange' = 'YWS imprint unlikely',
+      'yellow' = 'YWS imprint questionable',
+      'green' = 'YWS imprint likely',
+      'blue' = '1816±7'
+    )) +
+  scale_color_manual(name = NULL,
+                     values = c('darkblue' = 'darkblue'), 
+                     labels = c('darkblue' = '1816 CE'))
+  
 
 ggsave(filename = "figures/scales_outlier_plot.svg",
        plot = scales_out_plot,

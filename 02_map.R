@@ -293,3 +293,21 @@ full_ds_an <- full_ds %>%
          winter_1816_17_prec_an = extracted_winter_prec_an)
 
 write_csv(full_ds_an, "data/full_ds_an.csv")
+
+#extract countries and continents------
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+extract_countries_prep <- st_join(full_ds_sf, world)
+
+extract_countries <- st_drop_geometry(extract_countries_prep) %>% 
+  dplyr::select(lake_name, name_long, continent.y)
+
+extract_countries[which(extract_countries$lake_name == "DV09"), "name_long"] <- "Canada"
+extract_countries[which(extract_countries$lake_name == "DV09"), "continent.y"] <- "North America"
+
+extract_countries <- extract_countries %>%
+  rename(continent = continent.y, 
+         country = name_long,
+         lake_name_raw = lake_name)
+
+write_csv(extract_countries, "data/lake_countries.csv")

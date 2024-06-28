@@ -70,6 +70,8 @@ varve2climate <- tribble(
          lake_name = factor(lake_name, levels = sort(lake_name, decreasing = TRUE))
          )
 
+write_csv(varve2climate, "data/varve2climate.csv")
+
 varve2climate_plot <- ggplot(varve2climate) +
   geom_point(aes(x = climate_var, y = lake_name, color = season), size = 5) +
   geom_point(aes(x = climate_var, y = lake_name, shape = relation), size = 6) +

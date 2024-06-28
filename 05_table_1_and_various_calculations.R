@@ -68,12 +68,14 @@ table_1 <- full_ds %>%
          label = lake_name,
          source = str_replace(source, "NOAA", "WDS-Paleo"),
          No = 1:length(lake_name)) %>%
-  dplyr::select(No, ID, lake_name, label, lat, lon, source, layer, ref) %>%
+  dplyr::select(No, ID, lake_name, label, lat, lon, country, source, layer, ref) %>%
   mutate(lake_name = str_replace_all(lake_name, "_[1-3]", "")) %>% 
-  rename(`No.` = No, "Lake name" = lake_name, "Record label" = label, Latitude = lat, Longitude = lon, "Data source" = source, Reference = ref, "Thickness of" = layer) %>% 
+  rename(`No.` = No, "Lake name" = lake_name, "Record label" = label, Latitude = lat, Longitude = lon, Country = country, "Data source" = source, Reference = ref, "Thickness of" = layer) %>% 
   mutate(ID = dense_rank(`Lake name`)) %>% 
   rename("ID on the maps" = ID, "Latitude (°)" = Latitude, "Longitude (°)" = Longitude) %>% 
   mutate(`Record label` = paste(`Record label`, `Thickness of`, sep = " - "))
+
+write_csv(table_1, "data/table_1.csv")
 
 kable(table_1, format = "html") %>% 
   kable_styling() %>% 

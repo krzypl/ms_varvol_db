@@ -1,0 +1,229 @@
+lake_name,layer,treshold_prep,n_of_extremes,treshold,z
+Ayr Lake,varve,n_pos_z2,18,pos,2
+Ayr Lake,varve,n_pos_z3_5,12,pos,3.5
+Ayr Lake,varve,n_pos_z5,5,pos,5
+Ayr Lake,varve,n_neg_z1,14,neg,1
+Ayr Lake,varve,n_neg_z1_75,5,neg,1.75
+Ayr Lake,varve,n_neg_z2_5,0,neg,2.5
+Big Round Lake,varve,n_pos_z2,17,pos,2
+Big Round Lake,varve,n_pos_z3_5,8,pos,3.5
+Big Round Lake,varve,n_pos_z5,5,pos,5
+Big Round Lake,varve,n_neg_z1,18,neg,1
+Big Round Lake,varve,n_neg_z1_75,0,neg,1.75
+Big Round Lake,varve,n_neg_z2_5,0,neg,2.5
+Blue Lake,varve,n_pos_z2,14,pos,2
+Blue Lake,varve,n_pos_z3_5,8,pos,3.5
+Blue Lake,varve,n_pos_z5,5,pos,5
+Blue Lake,varve,n_neg_z1,17,neg,1
+Blue Lake,varve,n_neg_z1_75,3,neg,1.75
+Blue Lake,varve,n_neg_z2_5,0,neg,2.5
+C2,varve,n_pos_z2,17,pos,2
+C2,varve,n_pos_z3_5,11,pos,3.5
+C2,varve,n_pos_z5,8,pos,5
+C2,varve,n_neg_z1,19,neg,1
+C2,varve,n_neg_z1_75,3,neg,1.75
+C2,varve,n_neg_z2_5,0,neg,2.5
+Chala,light layer,n_pos_z2,18,pos,2
+Chala,light layer,n_pos_z3_5,11,pos,3.5
+Chala,light layer,n_pos_z5,6,pos,5
+Chala,light layer,n_neg_z1,21,neg,1
+Chala,light layer,n_neg_z1_75,2,neg,1.75
+Chala,light layer,n_neg_z2_5,0,neg,2.5
+Chevalier,dark layer,n_pos_z2,16,pos,2
+Chevalier,dark layer,n_pos_z3_5,6,pos,3.5
+Chevalier,dark layer,n_pos_z5,4,pos,5
+Chevalier,dark layer,n_neg_z1,17,neg,1
+Chevalier,dark layer,n_neg_z1_75,4,neg,1.75
+Chevalier,dark layer,n_neg_z2_5,1,neg,2.5
+DV09,varve,n_pos_z2,23,pos,2
+DV09,varve,n_pos_z3_5,14,pos,3.5
+DV09,varve,n_pos_z5,10,pos,5
+DV09,varve,n_neg_z1,14,neg,1
+DV09,varve,n_neg_z1_75,2,neg,1.75
+DV09,varve,n_neg_z2_5,0,neg,2.5
+Donard,varve,n_pos_z2,14,pos,2
+Donard,varve,n_pos_z3_5,5,pos,3.5
+Donard,varve,n_pos_z5,1,pos,5
+Donard,varve,n_neg_z1,24,neg,1
+Donard,varve,n_neg_z1_75,6,neg,1.75
+Donard,varve,n_neg_z2_5,0,neg,2.5
+East Lake_1,varve,n_pos_z2,15,pos,2
+East Lake_1,varve,n_pos_z3_5,13,pos,3.5
+East Lake_1,varve,n_pos_z5,6,pos,5
+East Lake_1,varve,n_neg_z1,20,neg,1
+East Lake_1,varve,n_neg_z1_75,10,neg,1.75
+East Lake_1,varve,n_neg_z2_5,1,neg,2.5
+East Lake_2,varve,n_pos_z2,13,pos,2
+East Lake_2,varve,n_pos_z3_5,10,pos,3.5
+East Lake_2,varve,n_pos_z5,9,pos,5
+East Lake_2,varve,n_neg_z1,20,neg,1
+East Lake_2,varve,n_neg_z1_75,9,neg,1.75
+East Lake_2,varve,n_neg_z2_5,3,neg,2.5
+Elk Lake,varve,n_pos_z2,10,pos,2
+Elk Lake,varve,n_pos_z3_5,2,pos,3.5
+Elk Lake,varve,n_pos_z5,0,pos,5
+Elk Lake,varve,n_neg_z1,21,neg,1
+Elk Lake,varve,n_neg_z1_75,13,neg,1.75
+Elk Lake,varve,n_neg_z2_5,4,neg,2.5
+Green Lake,varve,n_pos_z2,15,pos,2
+Green Lake,varve,n_pos_z3_5,6,pos,3.5
+Green Lake,varve,n_pos_z5,1,pos,5
+Green Lake,varve,n_neg_z1,18,neg,1
+Green Lake,varve,n_neg_z1_75,6,neg,1.75
+Green Lake,varve,n_neg_z2_5,1,neg,2.5
+Holzmaar,varve,n_pos_z2,15,pos,2
+Holzmaar,varve,n_pos_z3_5,9,pos,3.5
+Holzmaar,varve,n_pos_z5,5,pos,5
+Holzmaar,varve,n_neg_z1,17,neg,1
+Holzmaar,varve,n_neg_z1_75,10,neg,1.75
+Holzmaar,varve,n_neg_z2_5,2,neg,2.5
+Hvítárvatn_1,varve,n_pos_z2,15,pos,2
+Hvítárvatn_1,varve,n_pos_z3_5,4,pos,3.5
+Hvítárvatn_1,varve,n_pos_z5,2,pos,5
+Hvítárvatn_1,varve,n_neg_z1,22,neg,1
+Hvítárvatn_1,varve,n_neg_z1_75,6,neg,1.75
+Hvítárvatn_1,varve,n_neg_z2_5,0,neg,2.5
+Hvítárvatn_2,varve,n_pos_z2,18,pos,2
+Hvítárvatn_2,varve,n_pos_z3_5,4,pos,3.5
+Hvítárvatn_2,varve,n_pos_z5,1,pos,5
+Hvítárvatn_2,varve,n_neg_z1,18,neg,1
+Hvítárvatn_2,varve,n_neg_z1_75,2,neg,1.75
+Hvítárvatn_2,varve,n_neg_z2_5,0,neg,2.5
+Iceberg Lake_1,varve,n_pos_z2,8,pos,2
+Iceberg Lake_1,varve,n_pos_z3_5,2,pos,3.5
+Iceberg Lake_1,varve,n_pos_z5,2,pos,5
+Iceberg Lake_1,varve,n_neg_z1,20,neg,1
+Iceberg Lake_1,varve,n_neg_z1_75,11,neg,1.75
+Iceberg Lake_1,varve,n_neg_z2_5,5,neg,2.5
+Iceberg Lake_2,varve,n_pos_z2,18,pos,2
+Iceberg Lake_2,varve,n_pos_z3_5,10,pos,3.5
+Iceberg Lake_2,varve,n_pos_z5,8,pos,5
+Iceberg Lake_2,varve,n_neg_z1,16,neg,1
+Iceberg Lake_2,varve,n_neg_z1_75,5,neg,1.75
+Iceberg Lake_2,varve,n_neg_z2_5,0,neg,2.5
+Kuninkaisenlampi,dark layer,n_pos_z2,10,pos,2
+Kuninkaisenlampi,dark layer,n_pos_z3_5,5,pos,3.5
+Kuninkaisenlampi,dark layer,n_pos_z5,3,pos,5
+Kuninkaisenlampi,dark layer,n_neg_z1,19,neg,1
+Kuninkaisenlampi,dark layer,n_neg_z1_75,9,neg,1.75
+Kuninkaisenlampi,dark layer,n_neg_z2_5,3,neg,2.5
+Kuninkaisenlampi,light layer,n_pos_z2,13,pos,2
+Kuninkaisenlampi,light layer,n_pos_z3_5,7,pos,3.5
+Kuninkaisenlampi,light layer,n_pos_z5,3,pos,5
+Kuninkaisenlampi,light layer,n_neg_z1,17,neg,1
+Kuninkaisenlampi,light layer,n_neg_z1_75,12,neg,1.75
+Kuninkaisenlampi,light layer,n_neg_z2_5,10,neg,2.5
+Kusai,dark layer,n_pos_z2,16,pos,2
+Kusai,dark layer,n_pos_z3_5,10,pos,3.5
+Kusai,dark layer,n_pos_z5,7,pos,5
+Kusai,dark layer,n_neg_z1,19,neg,1
+Kusai,dark layer,n_neg_z1_75,4,neg,1.75
+Kusai,dark layer,n_neg_z2_5,0,neg,2.5
+Kusai,light layer,n_pos_z2,14,pos,2
+Kusai,light layer,n_pos_z3_5,6,pos,3.5
+Kusai,light layer,n_pos_z5,5,pos,5
+Kusai,light layer,n_neg_z1,19,neg,1
+Kusai,light layer,n_neg_z1_75,6,neg,1.75
+Kusai,light layer,n_neg_z2_5,3,neg,2.5
+Lagoon Etoliko,dark layer,n_pos_z2,10,pos,2
+Lagoon Etoliko,dark layer,n_pos_z3_5,1,pos,3.5
+Lagoon Etoliko,dark layer,n_pos_z5,1,pos,5
+Lagoon Etoliko,dark layer,n_neg_z1,24,neg,1
+Lagoon Etoliko,dark layer,n_neg_z1_75,7,neg,1.75
+Lagoon Etoliko,dark layer,n_neg_z2_5,4,neg,2.5
+Lagoon Etoliko,light layer,n_pos_z2,17,pos,2
+Lagoon Etoliko,light layer,n_pos_z3_5,5,pos,3.5
+Lagoon Etoliko,light layer,n_pos_z5,1,pos,5
+Lagoon Etoliko,light layer,n_neg_z1,22,neg,1
+Lagoon Etoliko,light layer,n_neg_z1_75,7,neg,1.75
+Lagoon Etoliko,light layer,n_neg_z2_5,2,neg,2.5
+Lehmilampi,varve,n_pos_z2,13,pos,2
+Lehmilampi,varve,n_pos_z3_5,2,pos,3.5
+Lehmilampi,varve,n_pos_z5,1,pos,5
+Lehmilampi,varve,n_neg_z1,19,neg,1
+Lehmilampi,varve,n_neg_z1_75,10,neg,1.75
+Lehmilampi,varve,n_neg_z2_5,5,neg,2.5
+Lower Murray Lake,varve,n_pos_z2,20,pos,2
+Lower Murray Lake,varve,n_pos_z3_5,14,pos,3.5
+Lower Murray Lake,varve,n_pos_z5,12,pos,5
+Lower Murray Lake,varve,n_neg_z1,21,neg,1
+Lower Murray Lake,varve,n_neg_z1_75,3,neg,1.75
+Lower Murray Lake,varve,n_neg_z2_5,0,neg,2.5
+Montcortès,light layer,n_pos_z2,10,pos,2
+Montcortès,light layer,n_pos_z3_5,5,pos,3.5
+Montcortès,light layer,n_pos_z5,3,pos,5
+Montcortès,light layer,n_neg_z1,18,neg,1
+Montcortès,light layer,n_neg_z1_75,5,neg,1.75
+Montcortès,light layer,n_neg_z2_5,1,neg,2.5
+Nar Gölü,dark layer,n_pos_z2,15,pos,2
+Nar Gölü,dark layer,n_pos_z3_5,3,pos,3.5
+Nar Gölü,dark layer,n_pos_z5,1,pos,5
+Nar Gölü,dark layer,n_neg_z1,21,neg,1
+Nar Gölü,dark layer,n_neg_z1_75,13,neg,1.75
+Nar Gölü,dark layer,n_neg_z2_5,4,neg,2.5
+Nar Gölü,light layer,n_pos_z2,14,pos,2
+Nar Gölü,light layer,n_pos_z3_5,6,pos,3.5
+Nar Gölü,light layer,n_pos_z5,2,pos,5
+Nar Gölü,light layer,n_neg_z1,22,neg,1
+Nar Gölü,light layer,n_neg_z1_75,16,neg,1.75
+Nar Gölü,light layer,n_neg_z2_5,8,neg,2.5
+Nautajärvi,dark layer,n_pos_z2,10,pos,2
+Nautajärvi,dark layer,n_pos_z3_5,5,pos,3.5
+Nautajärvi,dark layer,n_pos_z5,2,pos,5
+Nautajärvi,dark layer,n_neg_z1,19,neg,1
+Nautajärvi,dark layer,n_neg_z1_75,9,neg,1.75
+Nautajärvi,dark layer,n_neg_z2_5,2,neg,2.5
+Nautajärvi,light layer,n_pos_z2,13,pos,2
+Nautajärvi,light layer,n_pos_z3_5,4,pos,3.5
+Nautajärvi,light layer,n_pos_z5,1,pos,5
+Nautajärvi,light layer,n_neg_z1,20,neg,1
+Nautajärvi,light layer,n_neg_z1_75,6,neg,1.75
+Nautajärvi,light layer,n_neg_z2_5,2,neg,2.5
+Oeschinen,varve,n_pos_z2,6,pos,2
+Oeschinen,varve,n_pos_z3_5,4,pos,3.5
+Oeschinen,varve,n_pos_z5,2,pos,5
+Oeschinen,varve,n_neg_z1,25,neg,1
+Oeschinen,varve,n_neg_z1_75,11,neg,1.75
+Oeschinen,varve,n_neg_z2_5,3,neg,2.5
+Ogac,dark layer,n_pos_z2,12,pos,2
+Ogac,dark layer,n_pos_z3_5,4,pos,3.5
+Ogac,dark layer,n_pos_z5,2,pos,5
+Ogac,dark layer,n_neg_z1,14,neg,1
+Ogac,dark layer,n_neg_z1_75,9,neg,1.75
+Ogac,dark layer,n_neg_z2_5,3,neg,2.5
+Ogac,light layer,n_pos_z2,15,pos,2
+Ogac,light layer,n_pos_z3_5,6,pos,3.5
+Ogac,light layer,n_pos_z5,4,pos,5
+Ogac,light layer,n_neg_z1,20,neg,1
+Ogac,light layer,n_neg_z1_75,8,neg,1.75
+Ogac,light layer,n_neg_z2_5,3,neg,2.5
+Plomo,varve,n_pos_z2,3,pos,2
+Plomo,varve,n_pos_z3_5,2,pos,3.5
+Plomo,varve,n_pos_z5,0,pos,5
+Plomo,varve,n_neg_z1,28,neg,1
+Plomo,varve,n_neg_z1_75,15,neg,1.75
+Plomo,varve,n_neg_z2_5,10,neg,2.5
+Sawtooth,varve,n_pos_z2,21,pos,2
+Sawtooth,varve,n_pos_z3_5,17,pos,3.5
+Sawtooth,varve,n_pos_z5,14,pos,5
+Sawtooth,varve,n_neg_z1,16,neg,1
+Sawtooth,varve,n_neg_z1_75,4,neg,1.75
+Sawtooth,varve,n_neg_z2_5,0,neg,2.5
+Upper Sopper,dark layer,n_pos_z2,13,pos,2
+Upper Sopper,dark layer,n_pos_z3_5,7,pos,3.5
+Upper Sopper,dark layer,n_pos_z5,4,pos,5
+Upper Sopper,dark layer,n_neg_z1,20,neg,1
+Upper Sopper,dark layer,n_neg_z1_75,7,neg,1.75
+Upper Sopper,dark layer,n_neg_z2_5,3,neg,2.5
+Żabińskie,dark layer,n_pos_z2,12,pos,2
+Żabińskie,dark layer,n_pos_z3_5,5,pos,3.5
+Żabińskie,dark layer,n_pos_z5,1,pos,5
+Żabińskie,dark layer,n_neg_z1,20,neg,1
+Żabińskie,dark layer,n_neg_z1_75,9,neg,1.75
+Żabińskie,dark layer,n_neg_z2_5,2,neg,2.5
+Żabińskie,light layer,n_pos_z2,10,pos,2
+Żabińskie,light layer,n_pos_z3_5,7,pos,3.5
+Żabińskie,light layer,n_pos_z5,3,pos,5
+Żabińskie,light layer,n_neg_z1,22,neg,1
+Żabińskie,light layer,n_neg_z1_75,13,neg,1.75
+Żabińskie,light layer,n_neg_z2_5,1,neg,2.5

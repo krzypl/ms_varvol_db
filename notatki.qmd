@@ -1,0 +1,39 @@
+---
+title: "notatki"
+format: html
+editor: visual
+---
+
+## Notatki
+
+Dyskusja
+
+grupa (i):
+
+Big Round Lake - temp summer + -\> mala zmiana temp (\~0.5); ale duza zmiana temp winter
+
+Blue Lake - temp summer + -\> relatywnie mala zmiana temp (\~\>1)
+
+C2 - temp summer + -\> mala zmiana temp (\~0.5)
+
+chevalier - temp winter + -\> mala zmiana temp winter (\<1)
+
+elk lake - na -\> mala zmiana temp summer i winter
+
+hvitarvatn - na - zmiana temp o \~1 winter and summer
+
+lagoon etoliko light - temp + -\> zmiana temp summer \<1st; opady summer \~150% sredniej
+
+Lehmilampi - temp ogolnie - -\> bylo cieplej i zima i latem; zima o ponad 1.5st
+
+[Montcortes - prec autmn + -\> opad sie nie zmienil za bardzo, ale jest znacznie nizsza temperatura]{.underline}
+
+Nar Golu dark - NA -\> duzo wyzszy opad latem, poza tym zmiany niewielkie
+
+[Nautajarvi ligth - wint prec + -\> wint prec malo sie zmienil; bylo cieplej, przede wszystkim zima (ponad 2st)]{.underline}
+
+[Ogac ligth - temp summer + -\> \>1.5 st zimniej bylo latem, prawie 6 st zima, a mimo to, brak znaczacych zmian. Ciekawe]{.underline}
+
+[Upper Sopper - temp summer + -\> podobnie jak Ogac!]{.underline}
+
+grupa (ii) YWS record is unlikely

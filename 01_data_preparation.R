@@ -329,3 +329,15 @@ full_ds <- full_ds_prep %>%
   filter(!c(lake_name %in% varve2remove & layer == "varve"))
 
 write_csv(full_ds, "data/full_ds.csv")
+
+#add contry name to full_ds------------
+#country names were extracted from a map in script "02_map.R"
+
+lake_countries <- read_csv("data/lake_countries.csv")
+
+full_ds <- full_ds %>% 
+  mutate(lake_name_raw = str_extract(lake_name, "^[^_-]+")) %>% 
+  left_join(lake_countries) %>% 
+  dplyr::select(!lake_name_raw)
+
+write_csv(full_ds, "data/full_ds.csv")

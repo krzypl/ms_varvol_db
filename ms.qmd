@@ -1,0 +1,385 @@
+---
+title: "ms"
+author: "krzypl"
+format: html
+editor: visual
+execute: 
+  echo: false
+  message: false
+  warning: false
+---
+
+```{r}
+library(tidyverse)
+library(glue)
+library(english)
+source("functions/moving_median.R")
+source("functions/median_absolute_distance.R")
+source("functions/calculate_C1.R")
+```
+
+# Title: Imprint of the 1816 year without the summer in varve thickness records from lake sediment archives 
+
+Authors: Pleskot Krzysztof, Zolitschka Bernd 
+
+Affiliation: 
+
+## Abstract: 
+
+Keywords: 1815 Tambora eruption, lake sediments, varve thickness, climate event
+
+## 1. Introduction: 
+
+-   Relationship between varve thickness and climate – insights from monitoring studies and sediment records; underlie complexities, start from former belive that we can correlate varve records globally 
+
+-   sensitivity to short-term (annual scale) climate perturbation need yet to be confirmed 
+
+-   YWS as perfect candidate to test relationship between varve thickness and climate events – recent = small chronological uncertainty, covered by relatively large number of records; well documented = amplitude of climate change well understood; single reports of possible relationship between changes in sediment record and volcanic winters 
+
+-   Aim: To identify noticeable varve thickness anomalies in available varve thickness records around 1816, and to evaluate their possible links to YWS climate event. 
+
+## 2. Methods 
+
+```{r}
+full_ds <- read_csv("data/full_ds.csv") %>% 
+  filter(age_CE >= 1766 & age_CE <= 1866)
+
+full_ds_distinct <- full_ds %>% 
+  group_by(layer) %>% 
+  distinct(lake_name, .keep_all = TRUE)
+
+```
+
+In this study, we relied on published varve thickness records covering the period of 1766-1866 CE. Focusing on 101 years-long period centered at 1816 CE aimed at capturing the prominence of the anomalies potentially corresponding to YWS at centennial scale. Only these records were included in the study that had yearly resolution and were continuous for the period in focus. To obtain the relevant data we searched through the following data repositories: (i) VARDA (ref Ramisch), (ii) World Data Service for Paleoclimatology (WDS-Paleo) at NOAA’s National Centers for Environmental Information (ref. Gross), and (iii) PANGAEA (ref Felden). Additionally, we performed literature search of records that were not avaialble in public data repositories and asked corresponding authors for making their data available to this study. In case a data on varve sublayer thickness was available, we used it in the analysis instead of total varve thickness values. These sublayers were assigned to two classes, “light layer” and “dark layer”. Note that these classes have only descriptive sense and include sediments of various composition. For four records high quality data was available only for single class of varve sublayer. Table 1 lists all the `r length(full_ds_distinct$lake_name)` records that were examined in this study along with relevant references.
+
+```{r kable}
+table_1 <- read_csv("data/table_1.csv")
+
+knitr::kable(table_1)
+```
+
+To identify the climate variable and season influencing the varve thicknesses in a given record the most, we looked for the relevant information in the publications. Then we described each record distinguishing positive and negative relationship in one of the four seasons if such a relationship was reported by authors. If no iformation was provided by the authors on the relationship or relationship was reported to be weak we clasiffied these records as uncertain. Likewise, If no information was available on which season influenced varve thicknesses the most, or if the relationship with seasons was uncertain, the designation was made to "NA". , relationship was weak, or there more than one We distinguished positive and negative influence of a variable and for four season For each all the records we obtained from the relevant pap
+
+Climate anomalies during peak of YWS for the location of the lakes were obtained from global atmospheric paleo-reanalysis EKF400v2 that provides estimates of several climate variables with monthly resolution for the period of 1600-2005 CE (ref Valler). The paleo-reanalysis rely on data assimilation approach that infer past climate states from both climate model simulations and observation information (documentary, instrumental and proxy sources). Based on the EKF400v2 data we calculated temperature anomalies for northern hemishpere (NH) summer (June, July, August) 1816 CE and NH winter (December, January, February) 1816/1817 CE with respect to 1766-1866 means. The same calculations were performed for precipitation anomalies. EKF400v2 perform well in describing past annual scale climate anomalies (ref Valler) that justifies its use in this study. However, it is important to note that precision of the reconstruction can vary depending on the proximity of the grid cell to the nearest observation information, and on the precision of the information itself. For the period in focus, high density and variability of information is available mainly for Europe and North America, while for most of the other regions there is a shortage of information (refValler). This is particularly true for Africa.
+
+To identify noticeable anomalies in varve thickness data we first estimated trends with running median:\
+$$
+MED_i =median\{x(i)\}_{i=i-k}^{i+k}
+$$\
+where $x(i)$ is the varve thickness in the time $i$, and then calculated time-dependent variability in the records with running median absolute distance:\
+$$
+MAD_i = median\{|x(j) - median\{x(i)\}_{i=i-k}^{i+k}|\}_{j=i-k}^{i+k}
+$$\
+The smoothing parameter $k$, which controls width of the window in the calculations, was selected separately for each record from the range of 6 to 14 so that it minimized cross-validation criterion $C_1$ prsented by Zheng and Yang (ref1998):\
+$$
+C_1 = \frac{1}{n} \sum_{i=1}^n|x(i)-median\{x(j)\}_{j=i-k}^{i+k}|
+$$\
+Limiting $k$ to the range $[6,14]$, which result in window width of 13 to 29 years (window width = $2k + 1$), aims to avoid solutions that use either overly large or exceedingly small $k$ values, which can occur due to the autocorrelation typical in time-series data (Mudelsee_ref). We used $MED$ and $MAD$ because these are robust estimators that are not biased by extremes. Because methods relying on moving window truncate the original records at both ends, we used as an input the records longer than 101 years long, so that it was no need for extrapolating the resultant records to obtained the desired time range of 1766-1866 CE. We consider the thickness of a layer to be anomalously large or small if it crossed the treshold defined by $MED + MAD\times z$, where $z$ is a threshold detection value. Following Besonen et al. (ref2008) we examined various values of $z$. For positive anomalies we tested $z$ values equal to 2, 3.5, and 5, while for negative anomalies we used values of 1, 1.75, and 2.5. Lower values of $z$ were examined for detection of negative extremes due to the hard boundary at 0 mm. The final decision on the selection of $z$ for positive and negative anomalies was made based on the evaluation of a number of identified anomalies. We aimed at finding solution where anomalies are present but occur infrequently in the records. For the thickness that exceeded upper or lower thresholds we calculated magnitude of the anomaly considering sample-specific $MAD$:\
+$$
+S_m = \frac{x(i)-MED}{MAD}
+$$\
+At first approximation we considered the anomaly to be potentially related to YWS if it occured at $1816\pm7$. We used the same uncertainty level for all the records because in most cases chronological uncertainty was not evaluated. The range of $\pm7$ years corresponds to uncertainty of 3.5% for the time of YWS. This slightly exceed the $\pm2%$ suggested by Ojala et al (ref2012) as realistic error for most varve chronologies. However, we diceded to use reltively long time-frame to not readily exclude anomalies from around YWS that comes from the records potentially suffering from lower chronological precision.
+
+## Results: 
+
+### Distribution of lakes with varved sediments and YWS climate anomalies for their locations
+
+```{r}
+
+full_ds_an <- read_csv("data/full_ds_an.csv") %>% 
+  pivot_longer(cols = summer_1816_temp_an:winter_1816_17_prec_an,
+               names_to = "anomaly", values_to = "value_of_anomaly") %>% 
+  mutate(unit4anomaly = ifelse(anomaly == "summer_1816_temp_an" | anomaly == "winter_1816_17_temp_an", "°C", "%"),
+         lake_name = factor(lake_name, levels = sort(unique(lake_name), decreasing = TRUE)))
+
+n_of_lakes <- full_ds_an %>% 
+  distinct(lake_name) %>% 
+  summarise(n = n()) %>% 
+  pull(n)
+
+n_continents <- full_ds_an %>% 
+  distinct(lake_name, .keep_all = TRUE) %>%
+  group_by(continent) %>% 
+  summarise(n = n())
+
+n_of_prominent_neg_temp_1816 <- full_ds_an %>% 
+  filter(anomaly == "summer_1816_temp_an" & value_of_anomaly < -1) %>% 
+  summarise(n = n()) %>% 
+  pull(n)
+
+min_temp_1816 <- full_ds_an %>% 
+  filter(anomaly == "summer_1816_temp_an") %>% 
+  summarise(min_an = min(value_of_anomaly)) %>% 
+  pull(min_an)
+
+min_temp_1816_location <- full_ds_an %>% 
+  filter(anomaly == "summer_1816_temp_an") %>% 
+  filter(value_of_anomaly == min(value_of_anomaly)) %>% 
+  pull(lake_name)
+
+n_of_pos_temp_1816 <- full_ds_an %>% 
+  filter(anomaly == "summer_1816_temp_an" & value_of_anomaly > 0) %>% 
+  summarise(n = n()) %>% 
+  pull(n)
+
+n_of_neg_temp_1817 <- full_ds_an %>% 
+  filter(anomaly == "winter_1816_17_temp_an" & value_of_anomaly < 0) %>% 
+  summarise(n = n()) %>% 
+  pull(n)
+
+min_temp_1817 <- full_ds_an %>% 
+  filter(anomaly == "winter_1816_17_temp_an") %>% 
+  summarise(min_an = min(value_of_anomaly)) %>% 
+  pull(min_an)
+
+min_temp_1817_location <- full_ds_an %>% 
+  filter(anomaly == "winter_1816_17_temp_an") %>% 
+  filter(value_of_anomaly == min(value_of_anomaly)) %>% 
+  pull(lake_name)
+
+n_of_prominent_pos_temp_1817 <- full_ds_an %>% 
+  filter(anomaly == "winter_1816_17_temp_an" & value_of_anomaly >1) %>% 
+  summarise(n = n()) %>% 
+  pull(n)
+
+max_temp_1817 <- full_ds_an %>% 
+  filter(anomaly == "winter_1816_17_temp_an") %>% 
+  summarise(min_an = max(value_of_anomaly)) %>% 
+  pull(min_an)
+
+max_temp_1817_location <- full_ds_an %>% 
+  filter(anomaly == "winter_1816_17_temp_an") %>% 
+  filter(value_of_anomaly == max(value_of_anomaly)) %>% 
+  pull(lake_name)
+
+n_of_neg_prec_1816 <- full_ds_an %>% 
+  filter(anomaly == "summer_1816_prec_an") %>% 
+  filter(value_of_anomaly < 100) %>% 
+  summarise(n = n()) %>% 
+  pull(n)
+
+min_prec_1816_location <- as.character(full_ds_an %>% 
+  filter(anomaly == "summer_1816_prec_an") %>% 
+  filter(value_of_anomaly == min(value_of_anomaly)) %>%
+  pull(lake_name))
+
+min_prec_1816 <- round(full_ds_an %>% 
+  filter(anomaly == "summer_1816_prec_an") %>% 
+  summarise(min_prec = min(value_of_anomaly)) %>% 
+  pull(min_prec), 0)
+
+max_prec_1816 <- round(full_ds_an %>% 
+                         filter(anomaly == "summer_1816_prec_an") %>% 
+                         summarise(max_prec = max(value_of_anomaly)) %>% 
+                         pull(max_prec), 0)
+
+n_of_neg_prec_1817 <- full_ds_an %>% 
+  filter(anomaly == "winter_1816_17_prec_an" & value_of_anomaly < 100) %>% 
+  summarise(n = n()) %>% 
+  pull(n)
+
+min_prec_1817_location <- as.character(full_ds_an %>% 
+  filter(anomaly == "winter_1816_17_prec_an") %>% 
+  filter(value_of_anomaly == min(value_of_anomaly)) %>%
+  pull(lake_name))
+
+min_prec_1817 <- round(full_ds_an %>% 
+  filter(anomaly == "winter_1816_17_prec_an") %>% 
+  summarise(min_prec = min(value_of_anomaly)) %>% 
+  pull(min_prec), 0)
+
+
+```
+
+Records examined in this study comes from `r n_of_lakes` lakes. Most of the lakes are located in North America (n = `r n_continents$n[which(n_continents$continent == "North America")]`) and Europe (n = `r n_continents$n[which(n_continents$continent == "Europe")]`), but we have in our dataset lakes from each continent except of Australia and Antarctica. The EKF400v2 reconstruction shows variable climate anomalies for location of the lakes during NH summer 1816 and winter 1816/1817. The temperature during the summer of 1816 was noticeably lower than the average from 1766 to 1866 for most of the Earth's land surface, and for most of the lake locations. For `r words(n_of_prominent_neg_temp_1816)` sites the cooling exceeded 1 $^\circ\mathrm{C}$ reaching minimum of $\Delta$ `r round(min_temp_1816, 1)`at `r as.character(min_temp_1816_location)`. Warming was reported only for`r words(n_of_pos_temp_1816)` sites, but in neither case it markedly exceeded 0.5 $^\circ\mathrm{C}$. During NH winter of 1816/1817 CE more of the Earth's land surface experienced warming compared to NH summer of 1816 CE and more locations of the lakes show positive temperature anomalies. However, the number of sites experiencing cooling prevail (n = `r n_of_neg_temp_1817`). The cooling was the most pronounced for the lakes located in Arctic Canada, where it exceeded 2 $^\circ\mathrm{C}$ reaching a minimum of $\Delta$ `r min_temp_1817` $^\circ\mathrm{C}$ at `r as.character(min_temp_1817_location)`. Positive anomalies exceeded 1 $^\circ\mathrm{C}$ at the `r words(n_of_prominent_pos_temp_1817)` locations reaching a maximum of $\Delta$ `r round(max_temp_1817, 1)` at `r as.character(max_temp_1817_location)`.\
+Spatial manifestation of precipitation anomalies for NH summer 1816 CE is less uniform than this of temperature anomalies. We found that exactly half of the sites (n = `r n_of_neg_prec_1816`) experienced less precipitation than the 1766-1866 CE average. Departures from the mean were mostly small (\<25%) but at Nar Gölü there was more than twice as much precipitation as expected from the long-term mean (`r max_prec_1816`%). During NH winter 1816/1817 precepitation anomalies also varied spatially. For most of the locations of the lakes (n = `r n_of_neg_prec_1817`), it was drier than on average. The minimum of `r min_prec_1817`% of the average was reported for `r min_prec_1817_location`. Positive anomalies deviated less than 30% of the long term mean.
+
+### Record characteristics
+
+```{r}
+n_of_layers_of <- list(
+  varve = sum(table_1$`Thickness of` == "varve"),
+  light_layer = sum(table_1$`Thickness of` == "light layer"),
+  dark_layer = sum(table_1$`Thickness of` == "dark layer")
+)
+
+varve2climate <- read_csv("data/varve2climate.csv")
+
+n_no_climate <- varve2climate %>% 
+  filter(climate_var == "uncertain") %>% 
+  summarise(n = n()) %>% 
+  pull(n)
+
+n_temp <- varve2climate %>% 
+  filter(climate_var == "temperature") %>% 
+  summarise(n = n()) %>% 
+  pull(n)
+
+n_prec <- varve2climate %>% 
+  filter(climate_var == "precipitation") %>% 
+  summarise(n = n()) %>% 
+  pull(n)
+
+n_hyd_x <- varve2climate %>% 
+  filter(climate_var == "hydrological extremes") %>% 
+  summarise(n = n()) %>% 
+  pull(n)
+
+n_wind <- varve2climate %>% 
+  filter(climate_var == "wind strength") %>% 
+  summarise(n = n()) %>% 
+  pull(n)
+
+n_summer <- varve2climate %>% 
+  filter(season == "summer") %>% 
+  summarise(n = n()) %>% 
+  pull(n)
+
+n_winter <- varve2climate %>% 
+  filter(season == "winter") %>% 
+  summarise(n = n()) %>% 
+  pull(n)
+
+n_spring <- varve2climate %>% 
+  filter(season == "spring") %>% 
+  summarise(n = n()) %>% 
+  pull(n)
+
+n_autumn <- varve2climate %>% 
+  filter(season == "autumn") %>% 
+  summarise(n = n()) %>% 
+  pull(n)
+
+n_neg <- varve2climate %>% 
+  filter(relation == "negative") %>% 
+  summarise(n = n()) %>% 
+  pull(n)
+
+n_na <- varve2climate %>% 
+  filter(is.na(season) & climate_var != "uncertain") %>% 
+  summarise(n = n()) %>% 
+  pull(n)
+
+n_of_zeros <- full_ds %>% 
+  filter(thickness == 0) %>% 
+  summarise(n = n()) %>% 
+  pull(n)
+
+n_of_zeros_max <- full_ds %>% 
+  group_by(lake_name, layer) %>% 
+  filter(thickness == 0) %>% 
+  summarise(n = n()) %>% 
+  filter(n == max(n))
+
+min_min_thick <- full_ds %>% 
+  filter(!thickness == 0) %>% 
+  group_by(lake_name, layer) %>% 
+  summarise(min_thick = min(thickness))
+
+max_max_thick <- full_ds %>% 
+  filter(!thickness == 0) %>% 
+  group_by(lake_name, layer) %>% 
+  summarise(max_thick = max(thickness))
+
+med_med_thick <- full_ds %>% 
+  filter(!(lake_name == "Kuninkaisenlampi" & age_CE >= 1785 & age_CE <= 1794)) %>% 
+  group_by(lake_name, layer) %>% 
+  summarise(med_thick = median(thickness))
+
+sd_sd_thick <- full_ds %>% 
+  filter(!(lake_name == "Kuninkaisenlampi" & age_CE >= 1785 & age_CE <= 1794)) %>% 
+  group_by(lake_name, layer) %>% 
+  summarise(sd_thick = sd(thickness))
+```
+
+Derived from the `r n_of_lakes` lakes were `r length(full_ds_distinct$lake_name)` records which we examined in this study. Of these `r length(full_ds_distinct$lake_name)` records, `r n_of_layers_of$varve` were derived from total varve thickness measurements, while `r n_of_layers_of$light_layer`, and `r n_of_layers_of$dark_layer` concerns ligth and dark sublayer thicknesses, respectively. According to information provided in corresponding publications, `r length(full_ds_distinct$lake_name) - n_no_climate` records reveal clear association with some climate-related variable. Of this, only `r n_neg` records revealed negative relationship with the driving climate-related variable (i.e., the higher the value of the variable, the thicker the layer), whereas in the case of the remaining records the relationship was positive. The most common climate-related variable influencing the records was temperature (n = `r n_temp`), followed by precipitation (n = `r n_prec`), hydrological extremes (n = `r n_hyd_x`), and wind strength (n = `r n_wind`). Although for majority of the records (n = `r n_summer`) summer was the most important season controlling the thicknesses, some records revealed more clear association with other seasons (`r n_winter` with winter, `r n_spring` with spring, and `r n_autumn` with autumn). In the case of `r n_na` records revealing relationship with climate-related variable, none of the seasons played a dominant role.  
+
+The records differed markedly in terms of maximum amplitude of fluctuations, average thicknesses, and overall variability. In the records from Lake Kuninkaisenlampi, the thicknesses in the the section between 1785 and 1794 CE were derived from interpolation (translucent red rectangle in figxxx). Therefore, we excluded this interval from further analyses. Altogether, we found `r n_of_zeros` thicknesse values equal to zero. When zeros are not considered, the minimum values range from  `r min(min_min_thick$min_thick)` mm to `r max(min_min_thick$min_thick)` mm. Even more pronounced differences were found for median (range of `r min(med_med_thick$med_thick)`-`r max(med_med_thick$med_thick)`mm), and especially maximum (range of `r min(max_max_thick$max_thick)`-`r max(max_max_thick$max_thick)` mm) thicknesses. The noticeable difference in variability of the thicknesses is evident from the wide range of standard variation values (`r round(min(sd_sd_thick$sd_thick), 2)`-`r round(max(sd_sd_thick$sd_thick), 2)` mm).  
+
+### Outlier detection
+```{r}
+full_ds_k <- read_csv("data/full_ds.csv") %>%
+  filter(age_CE >= 1766-50 & age_CE <= 1866+50) %>% 
+  group_by(lake_name, layer) %>% 
+  mutate(k = calculate_C1(thickness),
+         window_size = 2*k+1,
+         mm = moving_median(thickness, window_size = mean(window_size)),
+         mad = median_absolute_distance(thickness, window_size = mean(window_size))) %>% 
+  mutate(tresh_pos_z2 = mm + mad*2,
+         tresh_pos_z3_5 = mm + mad*3.5,
+         tresh_pos_z5 = mm + mad*5,
+         tresh_neg_z1 = mm - mad*1,
+         tresh_neg_z1_75 = mm - mad*1.75,
+         tresh_neg_z2_5 = mm - mad*2.5,
+  ) %>% 
+  ungroup() %>% 
+  filter(age_CE >= 1766 & age_CE <= 1866) %>% 
+  arrange(lake_name, layer)
+
+n_of_out <- read_csv("data/n_of_out.csv")
+
+n_neg_out <- n_of_out %>% 
+  filter(treshold == "neg") %>% 
+  group_by(z) %>% 
+  summarise(median_n = median(n_of_extremes)) %>% 
+  mutate(z = as.numeric(as.character(z)))
+
+n_pos_out <- n_of_out %>% 
+  filter(treshold == "pos") %>% 
+  group_by(z) %>% 
+  summarise(median_n = median(n_of_extremes)) %>% 
+  mutate(z = as.numeric(as.character(z)))
+
+scales_out <- read_csv("data/scales_out.csv")
+
+tot_scales_out <- scales_out %>% 
+  group_by(lake_name, layer) %>% 
+  summarise(n = n()) %>% 
+  pull(n)
+
+neg_scales_out <- scales_out %>% 
+  filter(scaled_magnitude_sign == "negative") %>% 
+  group_by(lake_name, layer) %>%
+  summarise(n = n()) %>% 
+  pull(n)
+    
+pos_scales_out <- scales_out %>% 
+  filter(scaled_magnitude_sign == "positive") %>% 
+  group_by(lake_name, layer) %>%
+  summarise(n = n()) %>% 
+  pull(n)  
+
+yws_scales <- scales_out %>% 
+  filter(age_CE >= 1816 - 7 & age_CE <= 1816 + 7) %>% 
+  group_by(lake_name, layer) %>%
+  summarise(n = n()) %>% 
+  pull(n)
+
+```
+
+The criterion we used to select optimal $k$ in calculating $MED$ and $MAD$ covered the entire pre-selected range of `r min(full_ds_k$k)` to `r max(full_ds_k$k)`. Accordingly, window sizes used in the calculations varied from ``r min(full_ds_k$window_size)` to `r max(full_ds_k$window_size)` (specific window sizes used are provided in parentheses, next to the record labels in figxxx ). We reported noticeable difference in the number of outliers detected depending on the selection of $z$ parameter. Median number of negative anomalies for various $z$ values were as follows: `r n_neg_out$median_n[1]` ($z$=`r n_neg_out$z[1]`),  `r n_neg_out$median_n[2]` ($z$=`r n_neg_out$z[2]`), and `r n_neg_out$median_n[3]` ($z$=`r n_neg_out$z[3]`). In turn, for the positive anomalies the median number of outliers detected varied from `r n_pos_out$median_n[1]` ($z$=`r n_pos_out$z[1]`), through `r n_pos_out$median_n[2]` ($z$=`r n_pos_out$z[2]`), to `r n_pos_out$median_n[3]` ($z$=`r n_pos_out$z[3]`). Given that our aim at this stage was to find the solution that distinguish anomalies that are exceptional for the period in focus, we decided to select $z$ = `r n_neg_out$z[3]` for identification of negative extremes and $z$ = `r n_pos_out$z[3]` for identification of positive extremes.
+
+In the selected solution, the total number of the identified outliers varied from `r min(tot_scales_out)` to `r max(tot_scales_out)`. For `r length(full_ds_distinct$lake_name)-length(neg_scales_out)` records there was no negative anomaly, whereas positive anomaly was absent in `r length(full_ds_distinct$lake_name)-length(pos_scales_out)` records. The maximum numbers of negative and positive anomalies were `r max(neg_scales_out)` and `r max(pos_scales_out)`, respectively. Within the time range 1816$\pm$7, no anomalies were found in `r length(full_ds_distinct$lake_name)-length(yws_scales)` records, single anomaly was found in `r sum(yws_scales == 1)` records, and for `r sum(yws_scales > 1)`  records more than one anomaly was identified. 
+
+## Discussion
+Relying on our results it is possible to distinguish four categories of records that differ in the likelihood of containing an imprint of YWS. These are as follows (from the least to the most likely): (i) YWS imprint is missing; (ii) YWS imprint is unlikely; (iii) YWS imprint is questionable; and (iv) YWS imprint is likely. Below we characterize each group and explain how the categorization was performed in detail.
+
+### YWS imprint is missing
+The first group comprises all the `r length(full_ds_distinct$lake_name)-length(yws_scales)` records that have no anomalies within the time-range of 1816$\pm$7. This lack of anomalies
+can be explained at least to some extent. For several locations from which the records were derived, EKF400v2 suggests only slight climate anomalies, with precipitation close to long term average and temperature change not significantly exceeding 1stC. This concerns the following records: Blue Lake - varve, C2 - varve, Chevalier - varve, Elk lake - varve, Hvítárvatn_1 - varve, and Hvítárvatn_2 - varve. In other cases, although the climate anomaly was more noticeable, either the climate variable or the season when this noticeable anomaly occurred were not the ones that influenced the thicknesses justifying lack of thickness anomaly. The following records from the first category match this description: Big Round Lake - varve, Lagoon Etoliko - light layer, Lehmilampi - varve, Montcortès - light layer, Nautajärvi - light layer, Nar Gölü - dark layer.  
+The lack of the anomalies in the remaining two records from the first category, Ogac - ligth layer and Upper Sopper - dark layer, appears surprising given the confirmed indicative value of these records to temperature fluctuations. In both cases, summer temperature, which is the strongest predictor of the thicknesses (ref, ref), felt for over 1.5 stC. Morever, during the following winter, the cooling exceeded 4st in the case of Upper Sopper, and 6st C in the case of Ogac. The possible reasons behind the lack of expected imprint in the layer thicknesses for the records from this and other categories are discussed in the last section of this chapter.
+
+### YWS imprint is unlikely
+In the second group, there are five records showing anomalies that should not be present if climate shifts around YWS were the main driver controlling the layer thicknesses at that time and thickness-climate relationship was corretly identified. During YWS, summer temperatures were slightly lower for locations from Donard - varve, DV09 - varve, Lower Murray Lake - varve, and Sawtooth - varve records were derived. Consequently, a negative anomaly, if any, was expected since all these records show a positive relationship with summer temperature (ref, ref, ref, ref). However, what is present in each case is a positive anomaly.  
+The remaining record in this category, Chala - light layer, appears particularly interesting as one of the three anomalies found at 1816$\pm$7 was exceptionally large in multi-millenial time scale (ref). Yet, NH summer precipitaion, that is the strongest predictor of the thicknesess in this case (ref), remained unchanged for the time of YWS. One can argue that climate reconstruction for Lake Chala is not precise due to the large distance to the nearest available climate observation information (ref). However, there is another line of evidence suggesting precipitation was not markedly changed at the time of YWS. Precipitation in eastern Africa is driven to large extent by ENSO oscilation with particularly wet NH summers corresponding to prominent La nina events. Thus any anomalously wet summers should be tracable in ENSO index record that apparently does not show any noticeable shifts around 1816 CE. Therefore, we assume that the EKF400v2 is probably not exceedingly wrong suggesting no noticeable NH summer precipitation anomaly for 1816 CE. Consequently, the prominent anomaly in Chala - light layer record is most likely derived from processes not directly related to climate impacts of the 1815 Tambora eruption, and its presence around 1816 CE is a simple coincidence.
+
+4 kategorie:
+a) yws imprint is missing: zapisy, ktore nie maja zadnych anomalii - sprawdzic, czy sa tutaj zapisy, ktore pochodza ze stanowisk ze znacznymi anomaliami klimatycznymi w trakcie yws
+b) yws imprint unlikely: zapisy, dla ktorych zmiana jest niezgodna z tym, co jest spodziewane dla zmiany klimatu, ktora nastapila
+c) yws imprint questionable: zapisy, dla ktorych spodziewana zmiana w miazszosci layers jest zgodna ze zmiana klimatu, ale zmiana klimatu jest malej magnitudy wiec slabo tlumaczy anomalie; mamy anomalie w zapisie, dla ktorego nie ma jednoznacznie wskazanej zmiennej klimatycznej wplywajacej na miazszosc warstw.
+d) yws imprint likely.
+
+### varve thickness response to yearly-scale climate perturbations: lessons from YWS
+# Conclusions
+
+zapisy rozpoznane jako te, ktore pokazuja imprint of YWS, jak i te ktore zostaly zaklasyfikowane jako, ze raczej nie - uwazamy, ze w przypadku tego, co mamy takie przypisanie jest sensowne. Nie jest to jednak zupelnie niepodwazalne. Bardziej jednoznaczna odpowiedz bylaby mozliwa, gdyby zostala opracowana jakas proxy niezalezna zupelnie od tefry, ktora pozwala by identyfikowac zimy wulkaniczne. Cos takiego jednak nie istnieje, a opracowanie tego wydaje sie na ten moment trudnym wyzwaniem.
