@@ -1,15 +1,41 @@
 library(tidyverse)
 library(ggrepel)
+library(patchwork)
+theme_set(theme_bw())
 #plot anomalies------
 full_ds_an <- read_csv("data/full_ds_an.csv") %>% 
   pivot_longer(cols = summer_1816_temp_an:winter_1816_17_prec_an,
                names_to = "anomaly", values_to = "value_of_anomaly") %>% 
   mutate(unit4anomaly = ifelse(anomaly == "summer_1816_temp_an" | anomaly == "winter_1816_17_temp_an", "°C", "%"),
-         lake_name = factor(lake_name, levels = sort(unique(lake_name), decreasing = TRUE)))
+         lake_name = factor(lake_name, levels = sort(unique(lake_name), decreasing = TRUE))) %>% 
+  mutate(anomaly = gsub("summer_1816_temp_an", "Summer temperature in 1816", anomaly),
+         anomaly = gsub("winter_1816_17_temp_an", "Winter temperature in 1816/1817", anomaly),
+         anomaly = gsub("summer_1816_prec_an", "Summer precipitation in 1816", anomaly),
+         anomaly = gsub("winter_1816_17_prec_an", "Winter precipitation in 1816/1817", anomaly))
 
-anomalies_plot <- ggplot(full_ds_an, aes(y = lake_name, x = value_of_anomaly)) + #tutaj mozna zrobic osobno ploty dla temperatury i opadu, zeby utrzymac te same skale; inaczej jest wrazenie, ze sie rozjezdza 
+write_csv(full_ds_an, "data/full_ds_an_2plot.csv")
+
+anomalies_plot_temp <- full_ds_an %>% 
+  filter(anomaly == "Summer temperature in 1816" | anomaly == "Winter temperature in 1816/1817") %>% 
+  ggplot(aes(y = lake_name, x = value_of_anomaly)) +
   geom_col() +
-  facet_wrap(.~ anomaly, scales = "free")
+  facet_wrap(.~anomaly, scales = "fixed", nrow = 2) +
+  labs(
+    x = "Temperature (Δ°C)",
+    y = NULL
+  )
+
+anomalies_plot_prec <- full_ds_an %>% 
+  filter(anomaly == "Summer precipitation in 1816" | anomaly == "Winter precipitation in 1816/1817") %>% 
+  ggplot(aes(y = lake_name, x = value_of_anomaly)) +
+  geom_col() +
+  facet_wrap(.~anomaly, scales = "fixed", nrow = 2) +
+  labs(
+    x = "% of 1766-1866 mean",
+    y = NULL
+  )
+
+anomalies_plot <- wrap_plots(anomalies_plot_temp, anomalies_plot_prec, ncol = 2)
 
 ggsave(filename = "figures/anomalies_plot.svg",
        plot = anomalies_plot,

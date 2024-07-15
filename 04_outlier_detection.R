@@ -37,27 +37,83 @@ custom_labeller <- function(labels) {
   return(labels)
 }
 
-treshold_plot_prep <- full_ds %>%
+full_ds_2plot <- full_ds %>% 
+  pivot_longer(cols = c(thickness, mm, tresh_pos_z2:tresh_neg_z2_5),
+               names_to = "thickness_var", values_to = "thickness") %>% 
+  mutate(xmin_yws = 1816-7,
+         xmax_yws = 1816+7,
+         yws_range = factor('blue'),
+         yws = factor('darkblue'),
+         yws_year = 1816,
+         xmin_kunin = 1783,
+         xmax_kunin = 1797,
+         kunin_range = factor('red')
+         )
+
+full_ds_2plot$thickness_var <- factor(full_ds_2plot$thickness_var, levels = c("thickness", "mm", "tresh_neg_z1", "tresh_neg_z1_75", "tresh_neg_z2_5", "tresh_pos_z2", "tresh_pos_z3_5", "tresh_pos_z5"))
+
+
+treshold_plot_prep <- full_ds_2plot %>%
   ggplot() +
-  geom_line(aes(x = age_CE, y = thickness), linewidth = 0.2) +
-  geom_point(aes(x = age_CE, y = thickness)) +
-  geom_line(aes(x = age_CE, y = mm), color = "red") +
-  geom_line(aes(x = age_CE, y = tresh_pos_z2), color = "orange") +
-  geom_line(aes(x = age_CE, y = tresh_pos_z3_5), color = "darkorange2") +
-  geom_line(aes(x = age_CE, y = tresh_pos_z5), color = "darkorange4") +
-  geom_line(aes(x = age_CE, y = tresh_neg_z1), color = "lightblue") +
-  geom_line(aes(x = age_CE, y = tresh_neg_z1_75), color = "blue") +
-  geom_line(aes(x = age_CE, y = tresh_neg_z2_5), color = "darkblue") +
-  annotate("rect",
-           xmin = 1816 - 7, xmax = 1816 + 7, ymin = -Inf, ymax = Inf,
-           alpha = 0.1, fill = "blue") +
-  geom_vline(xintercept = 1816, color = "blue") +
+  geom_line(aes(x = age_CE, y = thickness, color = thickness_var), linewidth = 0.2) +
+#  geom_point(data = filter(full_ds_2plot, thickness_var == "thickness"), 
+#             aes(x = age_CE, y = thickness)) +
   labs(x = "Age (year CE)", y = "Thickness (mm)") +
-  facet_wrap(vars(lake_name, layer), scales = "free_y", ncol = 3, labeller = custom_labeller)
+  facet_wrap(vars(lake_name, layer),
+             scales = "free_y", ncol = 4, labeller = custom_labeller)
 
 treshold_plot <- treshold_plot_prep + 
-  geom_rect(data = filter(full_ds, lake_name == "Kuninkaisenlampi" & age_CE == 1766), 
-            aes(xmin = 1783, xmax = 1797, ymin = -Inf, ymax = Inf), fill = "red", alpha = 0.5)
+  geom_rect(data = distinct(full_ds_2plot, lake_name, layer, .keep_all = TRUE), 
+            aes(xmin = xmin_yws, xmax = xmax_yws, ymin = -Inf, ymax = Inf,
+                fill = yws_range), alpha = 0.3) +
+  geom_rect(data = filter(
+    distinct(full_ds_2plot, lake_name, layer, .keep_all = TRUE),
+    lake_name == "Kuninkaisenlampi"),
+            aes(xmin = xmin_kunin, xmax = xmax_kunin, ymin = -Inf, ymax = Inf, fill = kunin_range), alpha = 0.3) +
+  geom_vline(aes(xintercept = yws_year, color = yws), linewidth = 0.1) +
+  scale_fill_manual(
+    name = NULL,
+    values = c(
+      'blue' = 'blue',
+      'red' = 'red'),
+    labels = c(
+      'blue' = '1816±7',
+      'red' = "not considered in \n the analysis"
+    )) +
+  scale_color_manual(
+    name = NULL,
+    values = c(
+      'thickness' = 'black',
+      'mm' = "red",
+      "tresh_pos_z2" = "orange",
+      "tresh_pos_z3_5" = "darkorange2",
+      "tresh_pos_z5" = "darkorange4",
+      "tresh_neg_z1" = "lightblue",
+      "tresh_neg_z1_75" = "blue",
+      "tresh_neg_z2_5" = "darkblue",
+      "darkblue" = "darkblue"
+      ),
+    labels = c(
+      'thickness' = 'raw thickness',
+      'mm' = "moving median",
+      "tresh_pos_z2" = "positive threshold, z = 2",
+      "tresh_pos_z3_5" = "positive threshold, z = 3.5",
+      "tresh_pos_z5" = "positive threshold, z = 5",
+      "tresh_neg_z1" = "negative treshold, z = 1",
+      "tresh_neg_z1_75" = "negative threshold, z = 2",
+      "tresh_neg_z2_5" = "negative threshold, z = 2.5",
+      'darkblue' = '1816 CE'
+      )) +
+  theme(legend.position = "bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.text = element_text(size = 5.5),
+        axis.title.x = element_text(size = 8),
+        axis.title.y = element_text(size = 8),
+        legend.key.height = unit(0.5, "lines")) +
+  guides(color = guide_legend(nrow = 4),
+         fill = guide_legend(nrow = 2))
+
 
 ggsave(filename = "figures/treshold_plot.svg",
        plot = treshold_plot,
@@ -69,6 +125,11 @@ ggsave(filename = "figures/treshold_plot.pdf",
        width = 12.5,
        height = 17,
        device = "pdf")
+ggsave(filename = "figures/fig4.jpeg",
+       plot = treshold_plot,
+       width = 6.5,
+       height = 9,
+       device = "jpeg")
 
 n_of_out <- full_ds %>%
   filter(!is.na(mm)) %>% 
@@ -149,23 +210,23 @@ records_orange <- scales_out %>% # used later to extract records for which impri
   filter(record_label %in% c("Chala - light layer",
                              "Donard - varve",
                              "DV09 - varve",
-                             "Lower Murray Lake - varve",
-                             "Sawtooth - varve")) 
-
-records_yellow <- scales_out %>% 
-  distinct(record_label, .keep_all = TRUE) %>% 
-  filter(record_label %in% c("Ayr Lake - varve",
                              "East Lake_1 - varve",
                              "East Lake_2 - varve",
                              "Green Lake - varve",
                              "Iceberg Lake_1 - varve",
                              "Iceberg Lake_2 - varve",
-                             "Kuninkaisenlampi - dark layer",
                              "Kusai - light layer",
+                             "Lower Murray Lake - varve",
+                             "Plomo - varve",
+                             "Sawtooth - varve")) 
+
+records_yellow <- scales_out %>% 
+  distinct(record_label, .keep_all = TRUE) %>% 
+  filter(record_label %in% c("Ayr Lake - varve",
+                             "Kuninkaisenlampi - dark layer",
                              "Lagoon Etoliko - dark layer",
                              "Nautajärvi - dark layer",
                              "Ogac - dark layer",
-                             "Plomo - varve",
                              "Żabińskie - dark layer",
                              "Żabińskie - light layer"
                              ))
@@ -183,13 +244,13 @@ scales_out3 <- scales_out %>%
   mutate(red_category = ifelse(!record_label %in% records_red$record_label, 
                                "red", NA),
          ro_cat = ifelse(record_label %in% records_orange$record_label,
-                         "orange", red_category),
+                         "darkorange", red_category),
          roy_cat = ifelse(record_label %in% records_yellow$record_label,
-                          "yellow", ro_cat),
+                          "lightyellow", ro_cat),
          royg_cat = ifelse(record_label %in% records_green$record_label,
                            "green", roy_cat),
          yws_cat = as.factor(royg_cat)) %>% 
-  select(!c(red_category, ro_cat, roy_cat, royg_cat)) %>% 
+  dplyr::select(!c(red_category, ro_cat, roy_cat, royg_cat)) %>% 
   mutate(xmin = -Inf,
          xmax = Inf,
          ymin = -Inf,
@@ -202,7 +263,7 @@ scales_out3 <- scales_out %>%
          yws_year = 1816)
 
 scales_out3$yws_cat <- factor(scales_out3$yws_cat, levels = c(
-  "red", "orange", "yellow", "green"
+  "red", "darkorange", "lightyellow", "green"
 ))
 
 scales_out_plot <- scales_out_plot_prep +
@@ -216,16 +277,16 @@ scales_out_plot <- scales_out_plot_prep +
     'negative' = 'blueviolet',
     'positive' = 'red4',
     'red' = "red",
-    'orange' = 'orange',
-    'yellow' = 'yellow',
+    'darkorange' = 'darkorange',
+    'lightyellow' = 'lightyellow',
     'green' = 'green',
     'blue' = 'blue'),
     labels = c(
       'negative' = 'negative anomaly',
       'positive' = 'positive anomaly',
-      'red' = 'YWS imprint missing',
-      'orange' = 'YWS imprint unlikely',
-      'yellow' = 'YWS imprint questionable',
+      'red' = 'YWS imprint unlikely A',
+      'darkorange' = 'YWS imprint unlikely B',
+      'lightyellow' = 'YWS imprint questionable',
       'green' = 'YWS imprint likely',
       'blue' = '1816±7'
     )) +

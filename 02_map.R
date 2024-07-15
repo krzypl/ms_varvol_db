@@ -85,7 +85,7 @@ summer_r_map <- tm_shape(summer_r) +
             legend.bg.alpha = 0.6,
             frame = TRUE,
             legend.width = 1,
-            main.title = "Boreal summer temperature anomaly in 1816 with respect to 1766-1866 mean",
+            main.title = "(A) Boreal summer temperature anomaly in 1816 with respect to 1766-1866 mean",
             main.title.position = 0.05,
             main.title.size = 1) +
   tm_grid(labels.size = 0.8,  # Adjust label size
@@ -148,7 +148,7 @@ summer_prec_r_map <- tm_shape(summer_prec_r) +
             legend.bg.color = "white",
             legend.bg.alpha = 0.6,
             frame = TRUE,
-            main.title = "Boreal summer precipitation percentages in 1816 with respect to 1766-1866 mean",
+            main.title = "(C) Boreal summer precipitation percentages in 1816 with respect to 1766-1866 mean",
             main.title.position = 0.05,
             legend.width = 1,
             main.title.size = 1) +
@@ -205,7 +205,7 @@ winter_r_map <- tm_shape(winter_r) +
             legend.bg.color = "white",
             legend.width = 1,
             frame = TRUE,
-            main.title = "Boreal winter temperature anomaly in 1816/1817 with respect to 1766-1866 mean",
+            main.title = "(B) Boreal winter temperature anomaly in 1816/1817 with respect to 1766-1866 mean",
             main.title.position = 0.05,
             main.title.size = 1) +
   tm_grid(labels.size = 0.8,  # Adjust label size
@@ -256,7 +256,7 @@ winter_prec_r_prep <- raster(t(winter_prec_anomaly_1816_17_perc), xmn=min(longit
 winter_prec_r <- raster::rotate(winter_prec_r_prep)
 
 winter_prec_r_map <- tm_shape(winter_prec_r) + 
-  tm_raster(style = "cont", palette = "BrBG", midpoint = 100, n = 20, title = "Precipitation with respect to reference period (%)", legend.reverse = TRUE, legend.is.portrait = FALSE) +
+  tm_raster(style = "cont", palette = "BrBG", midpoint = 100, n = 20, title = "Precipitation with respect to reference period (%)", legend.reverse = FALSE, legend.is.portrait = FALSE) +
   tm_shape(countries) + 
   tm_borders(lwd = 1, col = "black") +
   tm_shape(full_ds_sf) +
@@ -268,7 +268,7 @@ winter_prec_r_map <- tm_shape(winter_prec_r) +
             legend.bg.alpha = 0.6,
             frame = TRUE,
             legend.width = 1,
-            main.title = "Boreal winter precipitation percentages in 1816/1817 with respect to 1766-1866 mean",
+            main.title = "(D) Boreal winter precipitation percentages in 1816/1817 with respect to 1766-1866 mean",
             main.title.position = 0.05,
             main.title.size = 1) +
   tm_grid(labels.size = 0.8,  # Adjust label size
