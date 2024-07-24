@@ -153,13 +153,15 @@ n_of_out <- full_ds %>%
            grepl("z5$", treshold_prep) ~ "5",
            TRUE ~ NA_character_))) 
 
-write_csv(n_of_out, "data/n_of_out.csv")
+write_rds(n_of_out, "data/n_of_out.rds")
 
 n_of_out_plot <- ggplot(n_of_out,
                         aes(x = treshold, y = n_of_extremes, fill = z)) +
   geom_col(position = position_dodge(width = 0.9)) +
-  labs(x = "Type of treshold", y = "Number of extremes identified") +
-  facet_wrap(vars(lake_name, layer), ncol = 9)
+  labs(x = "Type of treshold", y = "Number of outliers identified", fill = "Value of z") +
+  facet_wrap(vars(lake_name, layer), ncol = 7) +
+  theme(legend.position = "bottom",
+        strip.text = element_text(size = 7))
 
 ggsave(filename = "figures/n_of_outliers_plot.svg",
        plot = n_of_out_plot,
@@ -171,6 +173,12 @@ ggsave(filename = "figures/n_of_outliers_plot.pdf",
        width = 12.5,
        height = 6,
        device = "pdf")
+ggsave(filename = "figures/fig5.jpeg",
+       plot = n_of_out_plot,
+       width = 6.5,
+       height = 7,
+       device = "jpeg")
+
 
 scales_out <- full_ds %>% 
   filter(thickness < tresh_neg_z2_5 | thickness > tresh_pos_z5) %>%
@@ -267,10 +275,13 @@ scales_out3$yws_cat <- factor(scales_out3$yws_cat, levels = c(
 ))
 
 scales_out_plot <- scales_out_plot_prep +
+  geom_vline(data = scales_out3, aes(xintercept = yws_year, color = yws), linewidth = 0.1) +
   geom_rect(data = scales_out3, aes(xmin = xmin_yws, xmax = xmax_yws, ymin = ymin, ymax = ymax, fill = yws_range), alpha = 0.3) +
   geom_rect(data = scales_out3, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = yws_cat), alpha = 0.3) +
-  geom_vline(data = scales_out3, aes(xintercept = yws_year, color = yws), linewidth = 0.1) +
   geom_col(data = scales_out, aes(x = age_CE, y = scaled_magnitude, fill = scaled_magnitude_sign)) +
+  scale_color_manual(name = NULL,
+                     values = c('darkblue' = 'darkblue'), 
+                     labels = c('darkblue' = '1816 CE')) +
   scale_fill_manual(
     name = NULL,
     values = c(
@@ -290,9 +301,13 @@ scales_out_plot <- scales_out_plot_prep +
       'green' = 'YWS imprint likely',
       'blue' = '1816±7'
     )) +
-  scale_color_manual(name = NULL,
-                     values = c('darkblue' = 'darkblue'), 
-                     labels = c('darkblue' = '1816 CE'))
+  theme(axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.text = element_text(size = 6.5),
+        axis.title.x = element_text(size = 8),
+        axis.title.y = element_text(size = 8),
+        legend.key.height = unit(0.5, "lines")) +
+  guides(fill = guide_legend(nrow = 3))
   
 
 ggsave(filename = "figures/scales_outlier_plot.svg",
@@ -305,3 +320,9 @@ ggsave(filename = "figures/scales_outlier_plot.pdf",
        width = 12.5,
        height = 12,
        device = "pdf")
+
+ggsave(filename = "figures/fig6.jpeg",
+       plot = scales_out_plot,
+       width = 6.5,
+       height = 9,
+       device = "jpeg")

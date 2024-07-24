@@ -45,6 +45,11 @@ ggsave(filename = "figures/anomalies_plot.pdf",
        width = 12.5,
        height = 10,
        device = "pdf")
+ggsave(filename = "figures/fig2.jpeg",
+       plot = anomalies_plot,
+       width = 6.5,
+       height = 7,
+       device = "jpeg")
 
 #plot varve links to climate-------
 varve2climate <- tribble(
@@ -96,7 +101,7 @@ varve2climate <- tribble(
          lake_name = factor(lake_name, levels = sort(lake_name, decreasing = TRUE))
          )
 
-write_csv(varve2climate, "data/varve2climate.csv")
+write_rds(varve2climate, "data/varve2climate.rds")
 
 varve2climate_plot <- ggplot(varve2climate) +
   geom_point(aes(x = climate_var, y = lake_name, color = season), size = 5) +
@@ -104,11 +109,12 @@ varve2climate_plot <- ggplot(varve2climate) +
   scale_color_manual(values = c("summer" = "#FF6666", "autumn" = "#B8860B", "winter" = "lightblue", "spring" = "lightgreen")) +
   scale_shape_manual(values = c("negative" = 45, "positive" = 43)) +
   labs(
-    x = "Climate Variable",
-    y = "Lake Name",
+    x = "Climate variable",
+    y = NULL,
     color = "Season",
     shape = "Relationship with \n climate variable"
-  )
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ggsave(filename = "figures/varve2climate_plot.svg",
        plot = varve2climate_plot,
@@ -118,3 +124,8 @@ ggsave(filename = "figures/varve2climate_plot.pdf",
        width = 8,
        height = 10,
        device = "pdf")
+ggsave(filename = "figures/fig3.jpeg",
+       plot = varve2climate_plot,
+       width = 6.5,
+       height = 7,
+       device = "jpeg")

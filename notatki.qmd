@@ -2,6 +2,7 @@
 title: "notatki"
 format: html
 editor: visual
+---\
 ---
 
 ## Notatki
@@ -37,3 +38,111 @@ Nar Golu dark - NA -\> duzo wyzszy opad latem, poza tym zmiany niewielkie
 [Upper Sopper - temp summer + -\> podobnie jak Ogac!]{.underline}
 
 grupa (ii) YWS record is unlikely
+
+with current knowlage it remains possible to ditinguish between the records for which there indicate records for which there are no thickness anomalies .
+
+Rylying on the available data it is not possible to unequivocally associate thickness anomalies with The association of a thickness anomaly with climate shifts during YWS is challenging from at least two reasons. First, Relying on our results it is possible to distinguish four categories of records that differ in the likelihood of containing an imprint of YWS.
+
+It is generally well established that climate is a crucial driver of lake sedimentary processess, even if the relationship between sedimentary proxies like varve thickness, and climate are complex. One can use Ayr Lake - varve as an example of a record lacking statistically significant correlation with instrumental data that remain indicative of past noticeable climatic shifts. Although Thomas et al (ref2012) was not able to identify single climate variable that drives varve thicknesses in their record, they found clear reduction of varve thicknesses corresponding to regionally well documented cooling during the Little Ice Age. Obviously, this does not mean that all the anomalies in varve thickness records are associated with climate. In particular, in case of lakes with well documented human impact for the period of YWS, like Lake Żabińskie, Poland, anthropogenic-trigger become at least equally likely. Also, some random processes, not related to environmental disturbance, like sediment slumping, could explain varve thickness anomalies. Therefore, without additional evidence enabling association of thickness anomalies in the records from this category with climate perturbation we assume that YWS imprint should be considered questionable, even if likely.
+
+was consistent with other regional records in showing we can records of climatic shifts Ayr Lake - varve provides example that the records lacking statistically significant correlation with instrumental data remain important records of climatic shifts. That the records lacking statistically significant correlation with instrumental data remain important records of climatic shifts show
+
+Thickness records for which there is no single dominating climatic drivers are particularly challenging when it comes to understanding past climate fluctuations with little or no prior knowlage on past climates. Here, the climate shift in focus is at least partly understood, and we aim at finding thickness anomaly corresponding to a noticeable climate event clear driving Even if correlation between instrumental data and layer thicknesses does not go significat as in the case of lakes from this category, climate remain one of the crucial drivers of lake sedimentary processes, with impacts being either direct or indirect (ref). It is particularly problematic in case of However, in such cases caution is warranted as to assuming of the climate influence
+
+, assuming relationship the relationship between climate unlikely that climate does not influence sedimentation in a lake Climate influence sedimentation in lakes in various ways Complex relationship between varved archives and climate is
+
+in the case of all the other records (Ayr Lake - varve, East Lake_1 - varve, East Lake_2 - varve, Kuninkaisenlampi - dark layer, Nautajärvi - dark layer, Ogac - dark layer, Żabińskie - dark layer, and Żabińskie - light layer), whereas for the remaining records that was either summer or winter temperature change in an order of at least 1.5 stC that could have played a role.
+
+For each of the record from this category we found
+
+are these for which we are not able to provide convincing argument neither against or for association of the thickness anomalies with climatic impacts of the 1815 Tambora eruption. While the noticeable climate shifts was reported for each of the locations, and thickness anomaly was found within the periods in focus in each record from this category, the records have not proven relationship with any of the climate variable.
+
+In some cases, this relationship have not been tested, and it remains possible that
+
+lack of clear relationship between thickness of a layer and climate appears associated with the layer formation processes. For instance,
+
+processes of mechanisms a lake sedimentation processes. For instance,
+
+ble appears characteristic to a record. For i
+
+but the thickness anomaly is present while locations from which the records were derived experienced noticeable climate anomaly. For Lagoon Etoliko - dark layer the liekely potential driving force of the thickness anomaly was a change in summer precipitation that reached almost 150% of long-term average, in the case of all the other records (Ayr Lake - varve, East Lake_1 - varve, East Lake_2 - varve, Kuninkaisenlampi - dark layer, Nautajärvi - dark layer, Ogac - dark layer, Żabińskie - dark layer, and Żabińskie - light layer), whereas for the remaining records that was either summer or winter temperature change in an order of at least 1.5 stC that could have played a role. Altogether, these records form a group for which we failed to find argument against linking a thickness anomaly with YWS. However, we are also not able to confirm association of the anomalies with climate impacts of the 1815 Tambora eruptions, and thus the association remains speculative and questionable. ----moze zmienic nazwe na YWS imprint questionable ------
+
+We are not able to assess how many records that fell to this category lack clear association of the layer thicknesses to climate variables because thickness data was not validated against meteorological data. Ale ze potencjalne polaczenie istnieje pomiedzy miazszascia warw a klimatem. Wiemy natomiast, ze przynajmniej w niektorych przypadkach zaleznosc wydaje sie byc zlozona i na podstawie samej miazszosci nie da sie latwo wnioskowac o klimacie. Zabiskie ale tez Nautajarvi. W takich przypadkach dane z innych proxy bylyby szczegolnie pomocne. Na przyklad dla Zabiskiego, wiemy ze lagodne zimy, takie jak ta w trakcie YWS, powinny korespondowac ze zwiekszonym MAR. Tego nie obserwujemy
+
+W przypadku jeziora zabinskiego wiemy jednak, ze prawdopodobnie inne sedimentery proxies sa bardziej wskaznikowe dla klimatu niz sama miazszac. Lack of information on the relationship between climate and layer thickness is simply the
+
+For some of the records from the third category, finding link between would likely be possible if
+
+Although helpful in the case of any category liested in the discussion, additional information from proxies other than layer thickness would be exceptionally useful in validating conection between the thickness and climate anomaly in the third category. Thickness data is probably the easiest one
+
+However, with more detailed data on the composition of sediments more nuanced grouping would likely be possible.
+
+Record from Żabińskie is the only one for which we have yearly-resolution data that can inform
+
+However, we are also not able to confirm association of the anomalies with climate impacts of the 1815 Tambora eruptions by any means, and thus the association remains speculative and questionable. It remains possible that detailed examination of the records including Although information from additional proxies would be useful to support signal derived from
+
+most relevant driver of spefic climate variable and specific the limited In these cases, the climatic force, although strong, was not the right one
+
+among the possible drivers the presence of thickness anomaly No\
+Consequently, the five records containing the likely imprint of YWS were the only ones for which such an imprint was expected. Given the above, we argue that our results suggest that annual-scale climate anomalies are capable leaving identifiable trace in varve and varve sub-layer thicknesess time series despite lack of the YWS imprint in most of the records. It is necessery, however, that the climate anomaly occurs in wright season and that it concerns wright climate variable.
+
+With two exceptions, the lakes that experienced noticeable climate anomaly occurring during the season and concerning climate variable that reveals clear relationship with thicknesses, contained likely imprint of the YWS. Therefore, despite lack of the YWS imprint in most of the records, we conclude that annual-scale climate anomalies are capable leaving identifiable trace in varve and varve sub-layer thicknesess time series.
+
+nie da sie na pewno korelowac zapisow na podstawie zmian w miazszosci warw.
+
+byc
+
+zapisy rozpoznane jako te, ktore pokazuja imprint of YWS, jak i te ktore zostaly zaklasyfikowane jako, ze raczej nie - uwazamy, ze w przypadku tego, co mamy takie przypisanie jest sensowne. Nie jest to jednak zupelnie niepodwazalne. Bardziej jednoznaczna odpowiedz bylaby mozliwa, gdyby zostala opracowana jakas proxy niezalezna zupelnie od tefry, ktora pozwala by identyfikowac zimy wulkaniczne. Cos takiego jednak nie istnieje, a opracowanie tego wydaje sie na ten moment trudnym wyzwaniem.
+
+### varve thickness response to yearly-scale climate perturbations: lessons from YWS
+
+. s like of the scale of the 1815 Tambora eruption. n the one As it clearly lack imprint in most of the varve thickness records, we do not expect there was any other yearly-scale climatic event in the relatively recent past that would excert impacts on varve thicknesses globally.
+
+(e.g. if the thickness reveals positive relationship with summer temperature, the consistet change would be an exceptionally thin layer corresponding to an exceptionally cold summer)
+
+-   Relationship between varve thickness and climate – insights from monitoring studies and sediment records; underlie complexities, start from former belive that we can correlate varve records globally 
+
+-   sensitivity to short-term (annual scale) climate perturbation need yet to be confirmed 
+
+-   YWS as perfect candidate to test relationship between varve thickness and climate events – recent = small chronological uncertainty, covered by relatively large number of records; well documented = amplitude of climate change well understood; single reports of possible relationship between changes in sediment record and volcanic winters 
+
+-   or sometimes even subannual belong to one of the most useful are among the well known for storing a wealthy paleoclimate information (ref).
+
+This apparent success is not only important for the paleoclimatologists but also have significant benefits for contextualizng the ongoing climate change and improving future climate projections and thus is important predictions and thus contribute that the current environmental challanges for instance, better contextualization of the onging climate change and thus
+
+. improvements that can contrubite more precise reconstructions of past climate fluctuations is
+
+suggested that the improvement in future studies can be achived by one of the directions in searching for the improvements possible to achive in future studies is the better understanding of climate signal in proxy data.
+
+The existing challanges among and paleocli paleoclimatic community efforts integrating climate model outputs with plethora of proxy information from various climatic archives (ref). Despite this advances, climatic reconstructions still suffer from uncertainities that could have been avoided if Part of the existing uncertainties results from our limited understanding of how the climatic signal is transferred to the archives. Therefore, studies contributing further advances can bene advances Although further advances depends largely on improvments in the methods of integration of data from various sources, better understanding of each of the climatic archives used in the compilations appears pressing, too. In particular, can un cannot be Although the existing uncertainties in climate reconstructions depend on the result the integration of the data from these various sources is challenging itself, it is also depends critically on Although integration Of
+
+. Attempts can be made to extract this information applying various methods of sediment analyses. However, relying on varve or varve sublayer thickness records alone it is usually possible to get important insigths past temperature or precipitation fluctuations.
+
+This is related to the fact that accumulation rate of authochtonous and allogenic sediment compotents is controlled to a large extend controlled by climate The thickness records can be used as indicative of past The use of the thickness as climate proxy is motivated by the fact the The rationale for using the thicknesses as climate proxy
+
+time series reveal asso c the factorslakes can be controlled by different processes leading to differences in the to climate variables and seasons. differ in terms of the sensitivity to particular climate variable or season that is most important for While temperature is the major control
+
+of past climates can still be improved benefiting the associated Therefore, better understanding of how climate was changing in the past appears important not only Recent advances in our understending of past climates in periods extending beyond coverage of data derived from instrumental measurments are impressive. They resulted mostly from integrated efforts of climate modellers and scientific community studying climatic archives (ref e.g. Osman et al. 2021, Neukom et al. 2019, Kaufmann and Broadman 2023). The achievments in the field of paleoclimatology proved to have wider implications for instance by providing better contextualization of the ongoing climate change and contributing to reducing uncertainities of future climate projections (ref. tierney et al 2020). Although undoubtly succesful, climate reconstructions can still be improved. One possible way in which past climate fluctuations can be reconstructed more precisely invlolves better understanding of climate signal in proxy data derived from climatic archives (Kaufman and Broadman 2023ref).
+
+justifying their use in climate reconstructions.
+
+Of the geological archives storing wealthy paleoclimate information, varve, or annually laminated, lake sediments are unique for providing records with at least annual resolution. Various approaches are available for extracting this information. Perhaphs the simplest, yet very efficient way to inffer past climate fluctuations rely on varve or varve subleyer thickness measurements. The obtained thickness time series often reveal strong relationship with instrumentally obtained climate data (ref, ref, ref), thus justifying their use in climate reconstructions.
+
+Despite the difficulties in climate reconstructions from varve/varve sublayer thicknesses,
+
+What is less well documented is the suitability of the proxy to the proxy have proven useful in better understanding past climate fluctuations in both regional (ref) and global scales (ref Emile-Geay et al. 2017). Yet, the reconstructions derived from varve/varve sublayer thicknesses focuses usually on multi-decadal and longer term climate fluctuations, while the ability yearly scale climate events have not been ex it were usually reconstructions The climate reconstructions However, even tough and are used in as evidenced in the complex relationship Although the complex relationship
+
+Despite
+
+1.  Varve Varve or varve sediments as climate recorders. Climatic signal is transferred through direct and indirect influences of temperature and precipitation on the amount of sediment component production/preciptation within water column, and delivery of allogenic components. Sometimes relationship is positive, sometimes negative, some sites reveals strongest relationship with temperature, some with precipiation, some sites respond to winter, some to summer, perhaps less to autumn and spring. However, in general, climate climate fluctuations are intrinsically related to thickness variation of varves and varve sublayers.
+2.  Paleoclimatic potential of varve records was recognized early. In piniering studies it was suggested that it is possible to detect same climate signal in distant sites. It is gennerally not due to spatial heterogenity of climate fluctuations. However, one can expect that a prominent global climate event can, in theory, be detectable in many sites. This can be particularly true if yearly scale event are to be considered as for longer-term climate fluctuations other factors can potentially override the expected signal including ontogenic processes, vegetation development, landscape evolution or, in more recent times, human impacts. It has not been verified, to our knowlage.
+3.  We argue that one possibility to verify potential of varve time series to study short-term climate events is to examine varve thickness anoamlies corresponding to climate coolings following major volcanic eruptions. These events, referred to as volcanic winters, are probably the most iconic yearly-scale climatic shifts manifested at global scale (ref. volcanoes and climate). Tutaj krotko, z czego wynika cooling.
+4.  verify if global climatic events results in correlated thickness anomalies in varve record among the wide spatial scales from several reasons. First, large magnitude of climate anomaly: Globaly, the climate anomaly following the 1815 Tambora eruption was exceptional at least in the last 300 years (refNeukom et al. 2019).
+
+Second, well documented. Third, recent, small chronological uncertainties. Fourth, relatively large number of records from various geographic settings are available as evident for instance from the recently developed varve sediment database, VARDA (\>20 even if only; Ramish et al.). 5. Cel i hipoteza
+
+confirmed ability of We hypothesized that
+
+This study - Aim: To identify noticeable varve thickness anomalies in available varve thickness records around 1816, and to evaluate their possible links to YWS climate event. 
+
+We claim this because the events, referred to as volcanic winters, are probably the most iconic yearly-scale, prominent climatic shifts manifested at global scale (ref. volcanoes and climate).
