@@ -117,19 +117,14 @@ treshold_plot <- treshold_plot_prep +
 
 ggsave(filename = "figures/treshold_plot.svg",
        plot = treshold_plot,
-       width = 12.5,
-       height = 17,
+       width = 6.5,
+       height = 9,
        device = "svg")
 ggsave(filename = "figures/treshold_plot.pdf",
        plot = treshold_plot,
-       width = 12.5,
-       height = 17,
-       device = "pdf")
-ggsave(filename = "figures/fig4.jpeg",
-       plot = treshold_plot,
        width = 6.5,
        height = 9,
-       device = "jpeg")
+       device = "pdf")
 
 n_of_out <- full_ds %>%
   filter(!is.na(mm)) %>% 
@@ -159,25 +154,20 @@ n_of_out_plot <- ggplot(n_of_out,
                         aes(x = treshold, y = n_of_extremes, fill = z)) +
   geom_col(position = position_dodge(width = 0.9)) +
   labs(x = "Type of treshold", y = "Number of outliers identified", fill = "Value of z") +
-  facet_wrap(vars(lake_name, layer), ncol = 7) +
+  facet_wrap(vars(lake_name, layer), ncol = 4, labeller = custom_labeller) +
   theme(legend.position = "bottom",
         strip.text = element_text(size = 7))
 
 ggsave(filename = "figures/n_of_outliers_plot.svg",
        plot = n_of_out_plot,
-       width = 12.5,
-       height = 17,
+       width = 6.5,
+       height = 9,
        device = "svg")
 ggsave(filename = "figures/n_of_outliers_plot.pdf",
        plot = n_of_out_plot,
-       width = 12.5,
-       height = 6,
-       device = "pdf")
-ggsave(filename = "figures/fig5.jpeg",
-       plot = n_of_out_plot,
        width = 6.5,
-       height = 7,
-       device = "jpeg")
+       height = 9,
+       device = "pdf")
 
 
 scales_out <- full_ds %>% 
@@ -217,7 +207,7 @@ records_orange <- scales_out %>% # used later to extract records for which impri
   distinct(record_label, .keep_all = TRUE) %>% 
   filter(record_label %in% c("Chala - light layer",
                              "Donard - varve",
-                             "DV09 - varve",
+                             "DV09 Lake - varve",
                              "East Lake_1 - varve",
                              "East Lake_2 - varve",
                              "Green Lake - varve",
@@ -232,7 +222,7 @@ records_yellow <- scales_out %>%
   distinct(record_label, .keep_all = TRUE) %>% 
   filter(record_label %in% c("Ayr Lake - varve",
                              "Kuninkaisenlampi - dark layer",
-                             "Lagoon Etoliko - dark layer",
+                             "Etoliko - dark layer",
                              "Nautajärvi - dark layer",
                              "Ogac - dark layer",
                              "Żabińskie - dark layer",
@@ -277,7 +267,7 @@ scales_out3$yws_cat <- factor(scales_out3$yws_cat, levels = c(
 scales_out_plot <- scales_out_plot_prep +
   geom_vline(data = scales_out3, aes(xintercept = yws_year, color = yws), linewidth = 0.1) +
   geom_rect(data = scales_out3, aes(xmin = xmin_yws, xmax = xmax_yws, ymin = ymin, ymax = ymax, fill = yws_range), alpha = 0.3) +
-  geom_rect(data = scales_out3, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = yws_cat), alpha = 0.3) +
+  geom_rect(data = scales_out3, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = yws_cat), alpha = 0.1) +
   geom_col(data = scales_out, aes(x = age_CE, y = scaled_magnitude, fill = scaled_magnitude_sign)) +
   scale_color_manual(name = NULL,
                      values = c('darkblue' = 'darkblue'), 
@@ -312,17 +302,11 @@ scales_out_plot <- scales_out_plot_prep +
 
 ggsave(filename = "figures/scales_outlier_plot.svg",
        plot = scales_out_plot,
-       width = 12.5,
-       height = 17,
+       width = 6.5,
+       height = 9,
        device = "svg")
 ggsave(filename = "figures/scales_outlier_plot.pdf",
        plot = scales_out_plot,
-       width = 12.5,
-       height = 12,
-       device = "pdf")
-
-ggsave(filename = "figures/fig6.jpeg",
-       plot = scales_out_plot,
        width = 6.5,
        height = 9,
-       device = "jpeg")
+       device = "pdf")

@@ -16,24 +16,29 @@ full_ds_an <- read_csv("data/full_ds_an.csv") %>%
 write_csv(full_ds_an, "data/full_ds_an_2plot.csv")
 
 anomalies_plot_temp <- full_ds_an %>% 
-  filter(anomaly == "Summer temperature in 1816" | anomaly == "Winter temperature in 1816/1817") %>% 
+  filter(anomaly == "Summer temperature in 1816" | anomaly == "Winter temperature in 1816/1817") %>%
+  mutate(anomaly = gsub("Summer temperature in 1816", "Summer of 1816" , anomaly),
+         anomaly = gsub("Winter temperature in 1816/1817", "Winter of 1816/1817", anomaly)) %>% 
   ggplot(aes(y = lake_name, x = value_of_anomaly)) +
   geom_col() +
   facet_wrap(.~anomaly, scales = "fixed", nrow = 2) +
   labs(
-    x = "Temperature (Δ°C)",
+    x = "Temperature anomaly (°C)",
     y = NULL
-  )
+  ) 
 
 anomalies_plot_prec <- full_ds_an %>% 
   filter(anomaly == "Summer precipitation in 1816" | anomaly == "Winter precipitation in 1816/1817") %>% 
+  mutate(anomaly = gsub("Summer precipitation in 1816", "Summer of 1816" , anomaly),
+         anomaly = gsub("Winter precipitation in 1816/1817", "Winter of 1816/1817", anomaly)) %>% 
   ggplot(aes(y = lake_name, x = value_of_anomaly)) +
   geom_col() +
   facet_wrap(.~anomaly, scales = "fixed", nrow = 2) +
   labs(
-    x = "% of 1766-1866 mean",
+    x = "Precipitation anomaly (%)",
     y = NULL
   )
+  
 
 anomalies_plot <- wrap_plots(anomalies_plot_temp, anomalies_plot_prec, ncol = 2)
 
@@ -42,61 +47,56 @@ ggsave(filename = "figures/anomalies_plot.svg",
        device = "svg")
 ggsave(filename = "figures/anomalies_plot.pdf",
        plot = anomalies_plot,
-       width = 12.5,
-       height = 10,
-       device = "pdf")
-ggsave(filename = "figures/fig2.jpeg",
-       plot = anomalies_plot,
        width = 6.5,
        height = 7,
-       device = "jpeg")
+       device = "pdf")
 
 #plot varve links to climate-------
 varve2climate <- tribble(
   ~lake_name, ~climate_var, ~relation, ~season, ~strength, ~other_drivers, ~comment,
-  "Ayr Lake - varve", "uncertain", NA, NA, NA, NA, NA,
+  "Ayr Lake - varve", "NA", NA, NA, NA, NA, NA,
   "Big Round Lake - varve", "temperature", "positive", "summer", "r = 0.46", NA, NA,
   "Blue Lake - varve", "temperature", "positive", "summer", "r2 = 0.31", NA, NA,
-  "C2", "temperature", "positive", "summer", NA, NA, "association of varve thickness with summer temperature follows Hardy et al. (1996)",
+  "C2 Lake - varve", "temperature", "positive", "summer", NA, NA, "association of varve thickness with summer temperature follows Hardy et al. (1996)",
   "Chala - light layer", "precipitation", "positive", "summer", NA, "wind", "strong relationship with ENSO; thick - light layer layer = La ninia",
-#  "Chala - dark layer", "uncertain", NA, "various", NA, NA, NA,
+#  "Chala - dark layer", "NA", NA, "various", NA, NA, NA,
   "Chevalier - dark layer", "temperature", "positive", "winter", "r = 0.71", "snowmelt", "r corresponds to nival units",
-#  "Czechowskie", "uncertain", NA, NA, NA, NA, NA,
+#  "Czechowskie", "NA", NA, NA, NA, NA, NA,
   "Donard - varve", "temperature", "positive", "summer", "r = 0.57", NA, NA,
-  "DV09 - varve", "temperature", "positive", "summer", NA, NA, "correlation with instrumental data was weak, but met station is distant",
-  "East Lake - varve", "uncertain", NA, "various", NA, "snow depth", "correlation with many variables was tested; no variable have dominating significance",
-  "Elk Lake - varve", "uncertain", NA, NA, NA, NA, "no information on varve thickness data in the text",
+  "DV09 Lake - varve", "temperature", "positive", "summer", NA, NA, "correlation with instrumental data was weak, but met station is distant",
+  "East Lake - varve", "NA", NA, "various", NA, "snow depth", "correlation with many variables was tested; no variable have dominating significance",
+  "Elk Lake - varve", "NA", NA, NA, NA, NA, "no information on varve thickness data in the text",
+"Etoliko - dark layer", "NA", NA, NA, NA, "productivity", NA,  
+"Etoliko - light layer", "temperature", "positive", "summer", NA, "productivity", NA,
   "Green Lake - varve", "hydrological extremes", "positive", "various", NA, "glacier recession", NA, 
   "Holzmaar - varve", "temperature", "negative", "various", "various", "precipitation", "see jpg for correlations",
-  "Hvítárvatn - varve", "uncertain", NA, NA, NA, "rate of glacia erosion", NA,
+  "Hvítárvatn - varve", "NA", NA, NA, NA, "rate of glacia erosion", NA,
   "Iceberg Lake - varve", "temperature", "positive", "summer", "weak", "lake levels; glacier dynamics", NA,
 #  "Kenai", "hydrological extremes", "positive", NA, NA, NA, NA,
-"Kuninkaisenlampi - dark layer", "uncertain", NA, NA, NA, NA, NA,
+"Kuninkaisenlampi - dark layer", "NA", NA, NA, NA, NA, NA,
 "Kuninkaisenlampi - light layer", "hydrological extremes", "positive", "spring", NA, NA, NA,
 "Kusai - dark layer", "wind strength", "positive", "summer", NA, NA, "wind strength is modulated by Siberian High",
   "Kusai - light layer", "temperature", "positive", "summer", NA, NA, NA,
-"Lagoon Etoliko - dark layer", "uncertain", NA, NA, NA, "productivity", NA,  
-  "Lagoon Etoliko - light layer", "temperature", "positive", "summer", NA, "productivity", NA,
   "Lehmilampi - varve", "temperature", "negative", "various", NA, "erosion", NA,
   "Lower Murray Lake - varve", "temperature", "positive", "summer", NA, NA, NA,
   "Montcortès - light layer", "precipitation", "positive", "autumn", "r = 0.428", "temperature, and precipitation in other months", NA,
-"Nar Gölü - dark layer", "uncertain", NA, NA, NA, "productivity", NA,
+"Nar Gölü - dark layer", "NA", NA, NA, NA, "productivity", NA,
   "Nar Gölü - light layer", "precipitation", "positive", "spring", NA, "evaporation", NA,
-"Nautajärvi - dark layer", "uncertain", NA, NA, NA, NA, NA,
+"Nautajärvi - dark layer", "NA", NA, NA, NA, NA, NA,
   "Nautajärvi - light layer", "precipitation", "positive", "winter", NA, "winter temperature", NA,
   "Oeschinen - varve", "precipitation", "positive", "summer", "r = 0.6", NA, NA,
-"Ogac - dark layer", "uncertain", NA, "various", NA, NA, "a consequence of late summer/fall precipitation as well as of spring/early summer temperature",
-  "Ogac - light layer", "temperature", "positive", "summer", "uncertain", "melting degree days etc.", "many variables related to summer thermal conditions can be important; no regression on instrumental data has been done",
+"Ogac - dark layer", "NA", NA, "various", NA, NA, "a consequence of late summer/fall precipitation as well as of spring/early summer temperature",
+  "Ogac - light layer", "temperature", "positive", "summer", "NA", "melting degree days etc.", "many variables related to summer thermal conditions can be important; no regression on instrumental data has been done",
    "Plomo - varve", "temperature", "positive", "winter", NA, NA, "the lake is glacier fed and depends on amount of material delivered with a meltwater; boreal winter is austral summer!",
   "Sawtooth - varve", "temperature", "positive", "summer", "r = 0.16", "melting degree-days r = 0.27", NA,
 #  "Skilak", "hydrological extremes", "positive", NA, NA, NA, NA,
   "Upper Sopper - dark layer", "temperature", "positive", "summer", "r = 0.82", NA, NA,
-"Żabińskie - dark layer", "uncertain", NA, NA, NA, NA, NA,
-  "Żabińskie - light layer", "uncertain", NA, NA, NA, NA, NA
+"Żabińskie - dark layer", "NA", NA, NA, NA, NA, NA,
+  "Żabińskie - light layer", "NA", NA, NA, NA, NA, NA
 ) %>% #by season I mean boreal season
   mutate(across(1:7, as.factor),
          climate_var = factor(climate_var, levels = c("temperature", "precipitation", "wind strength",
-                                                     "hydrological extremes", "uncertain")),
+                                                     "hydrological extremes", "NA")),
          season = factor(season, levels = c("spring", "summer", "autumn", "winter")),
          lake_name = factor(lake_name, levels = sort(lake_name, decreasing = TRUE))
          )
@@ -118,14 +118,11 @@ varve2climate_plot <- ggplot(varve2climate) +
 
 ggsave(filename = "figures/varve2climate_plot.svg",
        plot = varve2climate_plot,
+       width = 6.5,
+       height = 7,
        device = "svg")
 ggsave(filename = "figures/varve2climate_plot.pdf",
        plot = varve2climate_plot,
-       width = 8,
-       height = 10,
-       device = "pdf")
-ggsave(filename = "figures/fig3.jpeg",
-       plot = varve2climate_plot,
        width = 6.5,
        height = 7,
-       device = "jpeg")
+       device = "pdf")
