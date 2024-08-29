@@ -207,7 +207,7 @@ records_orange <- scales_out %>% # used later to extract records for which impri
   distinct(record_label, .keep_all = TRUE) %>% 
   filter(record_label %in% c("Chala - light layer",
                              "Donard - varve",
-                             "DV09 Lake - varve",
+                             "Lake DV09 - varve",
                              "East Lake_1 - varve",
                              "East Lake_2 - varve",
                              "Green Lake - varve",

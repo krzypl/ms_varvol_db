@@ -79,7 +79,7 @@ summer_r_map <- tm_shape(summer_r) +
   tm_shape(full_ds_sf) +
   tm_symbols(size = 0.5, col = "lightgreen", alpha = 0.8, border.col = "black") +
   tm_shape(full_ds_sf) +
-  tm_text("no", col = "black", bg.color = "white", bg.alpha = 0.6, shadow = TRUE, auto.placement = 0.01, fontface = "bold") +
+  tm_text("no", col = "black", bg.color = "white", bg.alpha = 0.6, auto.placement = 0.01, fontface = "bold") +
   tm_layout(legend.position = c("right", "bottom"),
             legend.bg.color = "white",
             legend.bg.alpha = 0.6,
@@ -142,8 +142,8 @@ summer_prec_r_map <- tm_shape(summer_prec_r) +
   tm_borders(lwd = 1, col = "black") +
   tm_shape(full_ds_sf) +
   tm_symbols(size = 0.5, col = "lightgreen", alpha = 0.8, border.col = "black") +
-  tm_shape(full_ds_sf) +
-  tm_text("no", col = "black", bg.color = "white", bg.alpha = 0.6, shadow = TRUE, auto.placement = 0.01, fontface = "bold") +
+#  tm_shape(full_ds_sf) +
+#  tm_text("no", col = "black", bg.color = "white", bg.alpha = 0.6, shadow = TRUE, auto.placement = 0.01, fontface = "bold") +
   tm_layout(legend.position = c("right", "bottom"),
             legend.bg.color = "white",
             legend.bg.alpha = 0.6,
@@ -199,8 +199,8 @@ winter_r_map <- tm_shape(winter_r) +
   tm_borders(lwd = 1, col = "black") +
   tm_shape(full_ds_sf) +
   tm_symbols(size = 0.5, col = "lightgreen", alpha = 0.8, border.col = "black") +
-  tm_shape(full_ds_sf) +
-  tm_text("no", col = "black", bg.color = "white", bg.alpha = 0.6, shadow = TRUE, auto.placement = 0.01, fontface = "bold") +
+#  tm_shape(full_ds_sf) +
+#  tm_text("no", col = "black", bg.color = "white", bg.alpha = 0.6, shadow = TRUE, auto.placement = 0.01, fontface = "bold") +
   tm_layout(legend.position = c("right", "bottom"),
             legend.bg.color = "white",
             legend.width = 1,
@@ -261,8 +261,8 @@ winter_prec_r_map <- tm_shape(winter_prec_r) +
   tm_borders(lwd = 1, col = "black") +
   tm_shape(full_ds_sf) +
   tm_symbols(size = 0.5, col = "lightgreen", alpha = 0.8, border.col = "black") +
-  tm_shape(full_ds_sf) +
-  tm_text("no", col = "black", bg.color = "white", bg.alpha = 0.6, shadow = TRUE, auto.placement = 0.01, fontface = "bold") +
+#  tm_shape(full_ds_sf) +
+#  tm_text("no", col = "black", bg.color = "white", bg.alpha = 0.6, shadow = TRUE, auto.placement = 0.01, fontface = "bold") +
   tm_layout(legend.position = c("right", "bottom"),
             legend.bg.color = "white",
             legend.bg.alpha = 0.6,
