@@ -302,8 +302,8 @@ extract_countries_prep <- st_join(full_ds_sf, world)
 extract_countries <- st_drop_geometry(extract_countries_prep) %>% 
   dplyr::select(lake_name, name_long, continent.y)
 
-extract_countries[which(extract_countries$lake_name == "DV09"), "name_long"] <- "Canada"
-extract_countries[which(extract_countries$lake_name == "DV09"), "continent.y"] <- "North America"
+extract_countries[which(extract_countries$lake_name == "DV09 Lake"), "name_long"] <- "Canada"
+extract_countries[which(extract_countries$lake_name == "DV09 Lake"), "continent.y"] <- "North America"
 
 extract_countries <- extract_countries %>%
   rename(continent = continent.y, 

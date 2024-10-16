@@ -241,51 +241,69 @@ pang_long <- pang_long_prep %>%
 #NOAA----------
 #the database was searched manually for records missing from both VARDA and PANGEA databases. The following records were found: 
 
-upper_sopper_prep <- read_table("https://www.ncei.noaa.gov/pub/data/paleo/paleolimnology/northamerica/canada/baffin/soper_2000.txt", skip = 81)
+#I encountered an issue trying to re-access noaa datasets. Hopefully, it's temporary. For now, I use the records previously saved
+# upper_sopper_prep <- read_table("https://www.ncei.noaa.gov/pub/data/paleo/paleolimnology/northamerica/canada/baffin/soper_2000.txt", skip = 81)
+# 
+# upper_sopper <- tibble(age_CE = as.numeric(c(names(upper_sopper_prep[1]), upper_sopper_prep$`1992`)),
+#                        dark_lamin_thick = as.numeric(c(names(upper_sopper_prep[2]), upper_sopper_prep$`0.233285`))) %>% 
+#   mutate(ref = "Hughen, K.A., Overpeck, J.T. and Anderson, R.F., 2000. Recent Warming in a 500-Year Paleotemperature Record from Varved Sediments: Upper Soper Lake, Baffin Island, Canada, The Holocene, 10(1), 9-19. Availible at: https://doi.org/10.1191/095968300676746202.",
+#          lake_name = "Upper Sopper",
+#          lat = 62.9166667, #coordinates from NOAA
+#          lon = -69.53)
+# 
+# green_lake <- read_table("https://www.ncei.noaa.gov/pub/data/paleo/paleolimnology/northamerica/canada/bc/menounos2006-green.txt", skip = 105) %>% 
+#   dplyr::select(year, thick_nlog) %>% 
+#   mutate(varve_thick = (exp(1))^thick_nlog,
+#          ref = "Schiefer, E., Menounos, B., Slaymaker, O., 2006. Extreme sediment delivery events recorded in the contemporary sediment record of a montane lake, southern Coast Mountains, British Columbia. Canadian Journal of Earth Sciences, 43(12), 1777-1790. Available at: https://doi.org/10.1139/e06-056",
+#          lake_name = "Green Lake",
+#          lat = 50.2, #coordinates from NOAA
+#          lon = -122.9) %>% 
+#   rename(age_CE = year) %>% 
+#   dplyr::select(!thick_nlog)
+# 
+# lake_nautajarvi <- read_table("https://www.ncei.noaa.gov/pub/data/paleo/paleolimnology/europe/finland/nautajarvi2005.txt", skip = 100-7) %>% 
+#   mutate(dark_lamin_thick = Organic * 10e-4,
+#          light_lamin_thick = Mineral * 10e-4,
+#          varve_thick = dark_lamin_thick + light_lamin_thick,
+#          age_CE = Year,
+#          lake_name = "Nautajärvi",
+#          ref = "Ojala, A.E.K. and T. Alenius.  2005. 10 000 years of interannual sedimentation recorded in the Lake Nautajärvi (Finland) clastic–organic varves.  
+# Palaeogeography, Palaeoclimatology, Palaeoecology, 219(3-4), 285-302, available at: doi:10.1016/j.palaeo.2005.01.002",
+#          lon = 24.6833,
+#          lat = 61.8000) %>% 
+#   dplyr::select(!Year & !`X-ray` & !density & !Mineral & !Organic)
+# 
+# noaa_long <- upper_sopper %>% 
+#   full_join(green_lake) %>%
+#   full_join(lake_nautajarvi) %>% 
+#   mutate(source = "NOAA")
 
-upper_sopper <- tibble(age_CE = as.numeric(c(names(upper_sopper_prep[1]), upper_sopper_prep$`1992`)),
-                       dark_lamin_thick = as.numeric(c(names(upper_sopper_prep[2]), upper_sopper_prep$`0.233285`))) %>% 
-  mutate(ref = "Hughen, K.A., Overpeck, J.T. and Anderson, R.F., 2000. Recent Warming in a 500-Year Paleotemperature Record from Varved Sediments: Upper Soper Lake, Baffin Island, Canada, The Holocene, 10(1), 9-19. Availible at: https://doi.org/10.1191/095968300676746202.",
-         lake_name = "Upper Sopper",
-         lat = 62.9166667, #coordinates from NOAA
-         lon = -69.53)
-
-green_lake <- read_table("https://www.ncei.noaa.gov/pub/data/paleo/paleolimnology/northamerica/canada/bc/menounos2006-green.txt", skip = 105) %>% 
-  dplyr::select(year, thick_nlog) %>% 
-  mutate(varve_thick = (exp(1))^thick_nlog,
-         ref = "Schiefer, E., Menounos, B., Slaymaker, O., 2006. Extreme sediment delivery events recorded in the contemporary sediment record of a montane lake, southern Coast Mountains, British Columbia. Canadian Journal of Earth Sciences, 43(12), 1777-1790. Available at: https://doi.org/10.1139/e06-056",
-         lake_name = "Green Lake",
-         lat = 50.2, #coordinates from NOAA
-         lon = -122.9) %>% 
-  rename(age_CE = year) %>% 
-  dplyr::select(!thick_nlog)
-
-lake_nautajarvi <- read_table("https://www.ncei.noaa.gov/pub/data/paleo/paleolimnology/europe/finland/nautajarvi2005.txt", skip = 100-7) %>% 
-  mutate(dark_lamin_thick = Organic * 10e-4,
-         light_lamin_thick = Mineral * 10e-4,
-         varve_thick = dark_lamin_thick + light_lamin_thick,
-         age_CE = Year,
-         lake_name = "Nautajärvi",
-         ref = "Ojala, A.E.K. and T. Alenius.  2005. 10 000 years of interannual sedimentation recorded in the Lake Nautajärvi (Finland) clastic–organic varves.  
-Palaeogeography, Palaeoclimatology, Palaeoecology, 219(3-4), 285-302, available at: doi:10.1016/j.palaeo.2005.01.002",
-         lon = 24.6833,
-         lat = 61.8000) %>% 
-  dplyr::select(!Year & !`X-ray` & !density & !Mineral & !Organic)
-
-noaa_long <- upper_sopper %>% 
-  full_join(green_lake) %>%
-  full_join(lake_nautajarvi) %>% 
-  mutate(source = "NOAA")
+noaa_long <- read_csv("data/noaa_ds.csv") %>%
+  select(!country & !continent) %>% 
+  pivot_wider(names_from = layer, values_from = thickness) %>% 
+  rename(varve_thick = varve,
+         light_lamin_thick = `light layer`,
+         dark_lamin_thick = `dark layer`)
 
 #Geological Society of America (GSA) Data Repository -------------
-#Data from three alaskan lakes is available at https://gsapubs.figshare.com/articles/journal_contribution/Supplemental_material_Varve_formation_during_the_past_three_centuries_in_three_large_proglacial_lakes_in_south-central_Alaska/12535784; data is available only in pdf and required some steps to get the final records (I use stacked records from each lake):
-gsa_kenai <- read_csv("data/boes_et_al_2017_kenai.csv")
+#Data from three alaskan lakes is available at https://gsapubs.figshare.com/articles/journal_contribution/Supplemental_material_Varve_formation_during_the_past_three_centuries_in_three_large_proglacial_lakes_in_south-central_Alaska/12535784; data is available only in pdf and required some steps to get the final records:
+gsa_kenai <- read_csv("data/boes_et_al_2017_kenai_12_08.csv")
 
-gsa_skilak <- read_csv("data/boes_et_al_2017_skilak.csv")
+gsa_skilak_1 <- read_csv("data/boes_et_al_2017_skilak_sk12_03.csv") %>% 
+  mutate(lake_name = paste(lake_name, "_1", sep = ""))
+
+gsa_skilak_2 <- read_csv("data/boes_et_al_2017_skilak_sk12_10.csv")%>% 
+  mutate(lake_name = paste(lake_name, "_2", sep = ""))
 
 gsa_long <- gsa_kenai %>% 
-  full_join(gsa_skilak) %>% 
+  full_join(gsa_skilak_1) %>%
+  full_join(gsa_skilak_2) %>% 
   mutate(source = "GSA")
+
+#Data from Arctic Data Center (ADC) -----------
+
+adc_linnevatnet <- read_csv("data/lapointe_et_al_2023_linnevatnet.csv") %>% 
+  mutate(source = "ADC") #data is available at: https://arcticdata.io/catalog/view/doi%3A10.18739%2FA2QR4NS2X under the file "Grain_size.txt"
 
 #Data obtained from authors ---------
 au_czechowskie <- read_csv("data/slowinski_et_al_2021_czechowskie.csv")
@@ -294,6 +312,7 @@ au_nar_golu <- read_csv("data/woodbridge_2009_nar_golu.csv")
 au_holzmaar <- read_csv("data/zolitschka_et_al_2000_holzmaar.csv")
 au_zabinskie <- read_csv("data/zarczynski_et_al_2019_zabinskie.csv")
 au_kuninkaisenlampi <- read_csv("data/saarni_et_al_2016_kuninkaisenlampi.csv")
+au_kassjon <- read_csv("data/arnqvist_et_al_2016_kassjon.csv")
 
 au_long <- au_kusai %>% 
 #  full_join(au_czechowskie) %>% #interpolated data close to 1816 affect treshold position
@@ -301,16 +320,16 @@ au_long <- au_kusai %>%
   full_join(au_holzmaar) %>% 
   full_join(au_zabinskie) %>% 
   full_join(au_kuninkaisenlampi) %>% 
+  full_join(au_kassjon) %>% 
   mutate(source = "author")
   
-
-
 #Combining datasets --------------
 full_ds_prep <- varda_long_red %>% 
   full_join(pang_long) %>% 
   full_join(noaa_long) %>% 
-#  full_join(gsa_long) %>% #data are expressed as %
+  full_join(gsa_long) %>%
   full_join(au_long) %>%
+  full_join(adc_linnevatnet) %>% 
   filter(age_CE >= 1600) %>% 
   pivot_longer(cols = contains("thick"), values_to = "thickness", names_to = "layer") %>% 
   mutate(x = ifelse(layer == "varve_thick", "varve", layer),
@@ -328,8 +347,6 @@ varve2remove <- unique(varve2remove_prep$lake_name)
 full_ds <- full_ds_prep %>% 
   filter(!c(lake_name %in% varve2remove & layer == "varve"))
 
-write_csv(full_ds, "data/full_ds.csv")
-
 #add contry name to full_ds------------
 #country names were extracted from a map in script "02_map.R"
 
@@ -338,9 +355,10 @@ lake_countries <- read_csv("data/lake_countries.csv")
 full_ds <- full_ds %>% 
   mutate(lake_name_raw = str_extract(lake_name, "^[^_-]+")) %>% 
   left_join(lake_countries) %>% 
-  dplyr::select(!lake_name_raw) %>% 
-  mutate(lake_name = gsub("C2", "C2 Lake", lake_name),
-         lake_name = gsub("DV09", "DV09 Lake", lake_name),
-         lake_name = gsub("Lagoon Etoliko", "Etoliko", lake_name))
+  dplyr::select(!lake_name_raw) %>%
+  mutate(lake_name = gsub("C2", "Lake C2", lake_name),
+         lake_name = gsub("DV09", "Lake DV09", lake_name),
+         lake_name = gsub("Lagoon Etoliko", "Etoliko", lake_name))%>% 
+  arrange(lake_name)
 
 write_csv(full_ds, "data/full_ds.csv")

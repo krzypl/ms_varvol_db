@@ -1,6 +1,7 @@
 library(tidyverse)
 library(ggrepel)
 library(patchwork)
+library(gridExtra)
 theme_set(theme_bw())
 #plot anomalies------
 full_ds_an <- read_csv("data/full_ds_an.csv") %>% 
@@ -39,8 +40,7 @@ anomalies_plot_prec <- full_ds_an %>%
     y = NULL
   )
   
-
-anomalies_plot <- wrap_plots(anomalies_plot_temp, anomalies_plot_prec, ncol = 2)
+anomalies_plot <- grid.arrange(anomalies_plot_temp, anomalies_plot_prec, ncol = 2)
 
 ggsave(filename = "figures/anomalies_plot.svg",
        plot = anomalies_plot,
@@ -54,16 +54,20 @@ ggsave(filename = "figures/anomalies_plot.pdf",
 #plot varve links to climate-------
 varve2climate <- tribble(
   ~lake_name, ~climate_var, ~relation, ~season, ~strength, ~other_drivers, ~comment,
+  "Kassjön - varve", "NA", NA, NA, NA, NA, NA,
+  "Linnévatnet - varve", "NA", NA, NA, NA, NA, NA,
+  "Skilak - varve", "hydrological extremes", "positive", "summer", NA, NA, "autumn season also important",
+  "Kenai - varve", "hydrological extremes", "positive", "summer", NA, NA, "autumn season also important",
   "Ayr Lake - varve", "NA", NA, NA, NA, NA, NA,
   "Big Round Lake - varve", "temperature", "positive", "summer", "r = 0.46", NA, NA,
   "Blue Lake - varve", "temperature", "positive", "summer", "r2 = 0.31", NA, NA,
-  "C2 Lake - varve", "temperature", "positive", "summer", NA, NA, "association of varve thickness with summer temperature follows Hardy et al. (1996)",
+  "Lake C2 - varve", "temperature", "positive", "summer", NA, NA, "association of varve thickness with summer temperature follows Hardy et al. (1996)",
   "Chala - light layer", "precipitation", "positive", "summer", NA, "wind", "strong relationship with ENSO; thick - light layer layer = La ninia",
 #  "Chala - dark layer", "NA", NA, "various", NA, NA, NA,
   "Chevalier - dark layer", "temperature", "positive", "winter", "r = 0.71", "snowmelt", "r corresponds to nival units",
 #  "Czechowskie", "NA", NA, NA, NA, NA, NA,
   "Donard - varve", "temperature", "positive", "summer", "r = 0.57", NA, NA,
-  "DV09 Lake - varve", "temperature", "positive", "summer", NA, NA, "correlation with instrumental data was weak, but met station is distant",
+  "Lake DV09 - varve", "temperature", "positive", "summer", NA, NA, "correlation with instrumental data was weak, but met station is distant",
   "East Lake - varve", "NA", NA, "various", NA, "snow depth", "correlation with many variables was tested; no variable have dominating significance",
   "Elk Lake - varve", "NA", NA, NA, NA, NA, "no information on varve thickness data in the text",
 "Etoliko - dark layer", "NA", NA, NA, NA, "productivity", NA,  

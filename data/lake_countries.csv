@@ -2,21 +2,24 @@ lake_name_raw,country,continent
 Ayr Lake,Canada,North America
 Big Round Lake,Canada,North America
 Blue Lake,United States,North America
-C2,Canada,North America
 Chala,Kenya,Africa
 Chevalier,Canada,North America
-DV09,Canada,North America
 Donard,Canada,North America
 East Lake,Canada,North America
 Elk Lake,United States,North America
+Etoliko,Greece,Europe
 Green Lake,Canada,North America
 Holzmaar,Germany,Europe
 Hvítárvatn,Iceland,Europe
 Iceberg Lake,United States,North America
+Kassjön,Sweden,Europe
+Kenai,United States,North America
 Kuninkaisenlampi,Finland,Europe
 Kusai,China,Asia
-Lagoon Etoliko,Greece,Europe
+Lake C2,Canada,North America
+Lake DV09,NA,NA
 Lehmilampi,Finland,Europe
+Linnévatnet,Norway,Europe
 Lower Murray Lake,Canada,North America
 Montcortès,Spain,Europe
 Nar Gölü,Turkey,Asia
@@ -25,5 +28,6 @@ Oeschinen,Switzerland,Europe
 Ogac,Canada,North America
 Plomo,Chile,South America
 Sawtooth,Canada,North America
+Skilak,United States,North America
 Upper Sopper,Canada,North America
 Żabińskie,Poland,Europe

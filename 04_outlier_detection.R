@@ -26,9 +26,17 @@ full_ds <- full_ds %>%
   filter(age_CE >= 1766 & age_CE <= 1866) %>% 
   arrange(lake_name, layer)
 
+detrended_records <- full_ds %>% 
+  mutate(detrended_thickness = thickness - mm) %>% 
+  select(lake_name, age_CE, layer, detrended_thickness)
+
+write_csv(detrended_records, "data/detrended_records.csv")
+
 win_size_lab <- paste("(",
                       2*(distinct(full_ds, lake_name, layer,
                                   .keep_all = TRUE))$k + 1, ")", sep = "")
+
+
 
 custom_labeller <- function(labels) {
   labels <- as.data.frame(labels)
@@ -214,6 +222,7 @@ records_orange <- scales_out %>% # used later to extract records for which impri
                              "Iceberg Lake_1 - varve",
                              "Iceberg Lake_2 - varve",
                              "Kusai - light layer",
+                             "Linnévatnet - varve",
                              "Lower Murray Lake - varve",
                              "Plomo - varve",
                              "Sawtooth - varve")) 
