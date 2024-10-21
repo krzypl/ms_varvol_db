@@ -2,6 +2,7 @@ library(tidyverse)
 library(ncdf4)
 library(raster)
 library(sf)
+theme_set(theme_bw())
 
 full_ds <- read_csv("data/full_ds.csv") %>% 
   mutate(lake_name = str_replace_all(lake_name, "_[1-3]", "")) %>% 
