@@ -44,6 +44,8 @@ anomalies_plot <- grid.arrange(anomalies_plot_temp, anomalies_plot_prec, ncol = 
 
 ggsave(filename = "figures/anomalies_plot.svg",
        plot = anomalies_plot,
+       width = 6.5,
+       height = 7.5,
        device = "svg")
 ggsave(filename = "figures/anomalies_plot.pdf",
        plot = anomalies_plot,
