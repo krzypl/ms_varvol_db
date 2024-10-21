@@ -10,6 +10,7 @@ full_ds <- read_csv("data/full_ds.csv") %>%
 
 lake_coords <- full_ds %>% 
   select(lake_name, lat, lon)
+
 # Get names for data files
 ekf_names <- list.files(path = "data/ekf400_ens_mem_mean", full.names = TRUE)
 
@@ -94,19 +95,21 @@ ekf_summer_temperatures <- bind_rows(results_list) %>%
   mutate(summer_temperature = summer_temperature - 273.15)
 
 # winter temperarue record -----------
-# Function to extract summer temperatures (June, July, August)
+# Function to extract winter temperatures
+nc_data_list <- lapply(ekf_names, nc_open)
+
 extract_winter <- function(arr) {
   summer_temp <- arr[,,c(1,2,12)]
   return(summer_temp)
 }
 
-# Loop through all netCDF files and extract summer temperatures
+# Loop through all netCDF files
 temp_list <- lapply(nc_data_list, get_temp)
 
 # Extract winter temperatures for each year (1766-1867)
 winter_temp_list <- lapply(temp_list, extract_winter)
 
-ekf_1867 <- nc_open("data/ekf400_ens_mem_mean_1867/EKF400_ens_mem_Mean_v2.0_266.nc")
+ekf_1867 <- nc_open("data/ekf400_ens_mem_mean_1867/EKF400_ens_mem_Mean_v2.0_266.nc") #to obtain temperatures for winter 1866/1867, it it necessery to use data from 1867
 ekf_1867_temp <- get_temp(ekf_1867)
 
 ekf_1867_winter_prep <- ekf_1817_temp[,,1:2]
@@ -148,7 +151,7 @@ merged_data[[length(winter_temp_list)]] <- final_merged
 
 winter_temp_list <- merged_data
 
-# Now calculate the mean summer temperature for each grid cell for each year
+# Now calculate the mean winter temperature for each grid cell for each year
 winter_temp_mean_list <- lapply(winter_temp_list, function(winter_arr) {
   apply(winter_arr, MARGIN = c(1, 2), FUN = mean)  # Mean over December, January, February
 })
@@ -207,7 +210,7 @@ ekf_winter_temperatures <- bind_rows(results_list) %>%
 #summer precipitation --------
 nc_data_list <- lapply(ekf_names, nc_open) 
 
-# Function to extract precerature data from the netCDF file
+# Function to extract precipitation data from the netCDF file
 get_prec <- function(nc_file) {
   ncvar_get(nc_file, "total precipitation")
 }
@@ -277,6 +280,8 @@ extract_winter <- function(arr) {
   return(summer_temp)
 }
 
+nc_data_list <- lapply(ekf_names, nc_open)
+
 # Loop through all netCDF files and extract summer temperatures
 prec_list <- lapply(nc_data_list, get_prec)
 
@@ -325,7 +330,7 @@ merged_data[[length(winter_prec_list)]] <- final_merged
 
 winter_prec_list <- merged_data
 
-# Now calculate the mean summer temperature for each grid cell for each year
+# Now calculate the mean winter precipitation for each grid cell for each year
 winter_prec_mean_list <- lapply(winter_prec_list, function(winter_arr) {
   apply(winter_arr, MARGIN = c(1, 2), FUN = mean)  # Mean over December, January, February
 })
@@ -337,9 +342,9 @@ longitude <- ifelse(longitude_prep > 180, longitude_prep + (360-max(longitude_pr
 # Initialize an empty list to store the rasters for each year
 winter_rasters_list <- list()
 
-# Loop through each year's winter temperature and create a raster object
+# Loop through each year's winter precipitation and create a raster object
 for (i in 1:length(winter_prec_mean_list)) {
-  # Prepare a raster from the temperature data
+  # Prepare a raster from the precipitation data
   winter_r_prep <- raster(t(winter_prec_mean_list[[i]]), 
                           xmn = min(longitude), xmx = max(longitude), 
                           ymn = min(latitude), ymx = max(latitude), 
@@ -363,10 +368,10 @@ results_list <- list()
 
 # Loop through each year (each raster in the list)
 for (year in names(winter_rasters_list)) {
-  # Extract the temperature values for the lake locations from the raster of the current year
+  # Extract the precipitation values for the lake locations from the raster of the current year
   precipitation_values <- raster::extract(winter_rasters_list[[year]], lake_coords_sf)
   
-  # Create a tibble with the lake names, year, and extracted temperature values
+  # Create a tibble with the lake names, year, and extracted precipitation values
   year_data <- tibble(
     lake_name = lake_coords_sf$lake_name,
     year = as.numeric(year),
