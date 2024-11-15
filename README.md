@@ -1,8 +1,8 @@
-# This repository contains code necessery to reproduce all the analyses and figures for the paper: "Is the ‘Year Without a Summer’ imprinted in continental varve thickness records?" by Krzysztof Pleskot and Bernd Zolitschka published in Quaternary Science Reviews. 
+This repository contains the code necessary to reproduce all analyses and figures for the paper: "Is the ‘Year Without a Summer’ imprinted in continental varve thickness records?" by Krzysztof Pleskot and Bernd Zolitschka, published in Quaternary Science Reviews.
 
-The varve thickness time series analyzed in this study are obtained directly from public data repositories or were shared by authors of original publications and are stored in "data" file of this repository.
+The varve thickness time series analyzed in this study were obtained either directly from public data repositories or shared by the authors of the original publications. These data are stored in the "data" folder of this repository.
 
-The data necessery for calculating site-specific climate anomalies and reproducing climate anomaly maps can be obtained from https://www.wdc-climate.de/ui/entry?acronym=EKF400_ens_mem_Mean_v2.0 upon registration registration.
+The data necessary for calculating site-specific climate anomalies and reproducing climate anomaly maps can be obtained from https://www.wdc-climate.de/ui/entry?acronym=EKF400_ens_mem_Mean_v2.0 upon registration.
 
 
 ## R Session Information
